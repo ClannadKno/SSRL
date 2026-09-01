@@ -1,0 +1,40 @@
+{
+  "name": "ssrl-esp-browser-load-test",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Browser-level discussion load test for SSRL-ESP.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "install:browsers": "playwright install chromium",
+    "test:discussion:30m": "node src/run.js --scenario discussion-30m",
+    "test:discussion:60m": "node src/run.js --scenario discussion-60m",
+    "test:full-flow:30m": "node src/run.js --scenario full-flow-30m",
+    "test:full-flow:60m": "node src/run.js --scenario full-flow-60m",
+    "test:one-group:states": "node src/run.js --scenario one-group-full-flow-trigger-states",
+    "test:p0-batch6": "node src/run.js --scenario one-group-full-flow-trigger-states --suite p0-batch6",
+    "test:p0-batch6-direct": "node src/run.js --scenario one-group-full-flow-trigger-states --suite p0-batch6-direct",
+    "test:six-group:strategy-coverage": "node src/run.js --scenario six-group-strategy-coverage",
+    "dry-run:six-group:strategy-coverage": "node src/run.js --scenario six-group-strategy-coverage --dry-run",
+    "test:trigger-states:4p": "node src/run.js --scenario trigger-states-4p",
+    "test:trigger-states:4p:60m": "node src/run.js --scenario trigger-states-4p-60m",
+    "test:trigger-states:all": "node src/run.js --scenario trigger-states-all-groups",
+    "test:trigger-states:all:60m": "node src/run.js --scenario trigger-states-all-groups-60m",
+    "dry-run:30m": "node src/run.js --scenario discussion-30m --dry-run",
+    "dry-run:60m": "node src/run.js --scenario discussion-60m --dry-run",
+    "dry-run:full-flow": "node src/run.js --scenario full-flow-30m --dry-run",
+    "dry-run:one-group:states": "node src/run.js --scenario one-group-full-flow-trigger-states --dry-run",
+    "dry-run:trigger-states:4p": "node src/run.js --scenario trigger-states-4p --dry-run",
+    "dry-run:trigger-states:4p:60m": "node src/run.js --scenario trigger-states-4p-60m --dry-run",
+    "dry-run:trigger-states:all": "node src/run.js --scenario trigger-states-all-groups --dry-run",
+    "dry-run:trigger-states:all:60m": "node src/run.js --scenario trigger-states-all-groups-60m --dry-run",
+    "audit:batch18": "node src/runBatch18LabelAudit.js",
+    "test:state-strategy-coverage": "node --test test/state-strategy-coverage.test.js",
+    "test:six-group:router-refactor": "node --test test/six-group-strategy-router-refactor.test.js"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

@@ -1,0 +1,175 @@
+{# SSRL-ESP Teacher Session Control - Batch 8 operations workspace #}
+<main class="container teacher-operations-page session-control-page">
+  <header class="ops-page-header">
+    <h1>课次控制</h1>
+    <p>创建课次、绑定任务与问卷包，选择互斥的智能体模式并管理课次运行状态。</p>
+  </header>
+
+  <div class="ops-workspace ui-workspace">
+    <section class="card ops-section-card ops-status-card">
+      <div class="card-hd">
+        <h2>当前课次概览</h2>
+        <button class="btn small secondary" onclick="loadCurrentStatus()">刷新</button>
+      </div>
+      <div class="card-bd" id="currentStatusBar">
+        <div class="evidence">加载中...</div>
+      </div>
+      <div class="card-bd ops-task-summary">
+        <div id="currentTaskSummary" class="evidence" style="font-size:12px">正在读取当前任务...</div>
+      </div>
+    </section>
+
+    <div class="ops-section-grid ops-section-grid-two">
+      <section class="card ops-section-card">
+        <div class="card-hd">
+          <h2>课次基本配置</h2>
+        </div>
+        <div class="card-bd ops-form-grid">
+          <div class="ops-field">
+            <div class="label">课次名称 / 标题</div>
+            <input id="createSessionTitle" type="text" placeholder="可选" style="height:34px">
+          </div>
+          <div class="ops-field">
+            <div class="label">课次说明</div>
+            <textarea id="createSessionDescription" placeholder="可选" style="min-height:48px"></textarea>
+          </div>
+          <div class="ops-field">
+            <div class="label">课时</div>
+            <input id="createSessionNo" type="number" min="1" step="1" value="1" style="height:34px">
+          </div>
+          <div class="ops-field">
+            <div class="label">绑定任务</div>
+            <select id="createTaskId" style="height:34px;font-size:13px">
+              <option value="">-- 加载中 --</option>
+            </select>
+          </div>
+          <div class="ops-field">
+            <div class="label">绑定问卷包</div>
+            <select id="createQuestionnaireSetId" style="height:34px;font-size:13px">
+              <option value="">-- 不绑定问卷包 --</option>
+            </select>
+          </div>
+          <div class="ops-inline-controls" aria-label="智能体模式">
+            <label class="ops-checkbox">
+              <input id="createAgentModeNone" name="createAgentMode" type="radio" value="none"> 不启用智能体
+            </label>
+            <label class="ops-checkbox">
+              <input id="createAgentModeStrategy" name="createAgentMode" type="radio" value="strategy" checked> 策略智能体
+            </label>
+            <label class="ops-checkbox">
+              <input id="createAgentModeEmotion" name="createAgentMode" type="radio" value="emotion"> 情绪智能体
+            </label>
+          </div>
+          <div class="ops-actions">
+            <button class="btn" onclick="createSession()">创建课次</button>
+            <div id="createSessionStatus" class="muted" style="font-size:12px"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card ops-section-card">
+        <div class="card-hd">
+          <h2 id="taskFormTitle">新建任务</h2>
+        </div>
+        <div class="card-bd ops-form-grid ops-form-grid-compact">
+          <input id="taskTitle" placeholder="任务标题" style="height:34px">
+          <div class="ops-field">
+            <div class="label">实验阶段</div>
+            <div class="ops-inline-controls">
+              <select id="taskExperimentPhaseId" style="flex:1;height:34px">
+                <option value="">-- 选择阶段 --</option>
+              </select>
+              <button class="btn small secondary" onclick="createNewPhase()" style="white-space:nowrap">新建</button>
+            </div>
+          </div>
+          <input id="taskTimeLimitMinutes" type="number" min="5" max="240" step="1" value="30" placeholder="时长（分钟）" style="height:34px">
+
+          <div class="ops-fieldset">
+            <span class="ops-fieldset-title">任务正文</span>
+            <textarea id="taskBackground" placeholder="任务背景（每行一个段落）" style="min-height:48px"></textarea>
+            <textarea id="taskBrief" placeholder="本组任务" style="min-height:36px"></textarea>
+          </div>
+
+          <div class="ops-fieldset">
+            <span class="ops-fieldset-title">学生需求调查</span>
+            <textarea id="taskSurveyItems" placeholder="需求内容|百分比（每行一项，如：增加安静学习座位|44）" style="min-height:48px"></textarea>
+            <textarea id="taskSurveyNote" placeholder="调查说明" style="min-height:36px"></textarea>
+          </div>
+
+          <div class="ops-fieldset">
+            <span class="ops-fieldset-title">可选项目 / 服务</span>
+            <textarea id="taskOptions" placeholder="项目名称|费用|单位|主要作用|需要考虑的问题（每行一项）" style="min-height:48px"></textarea>
+          </div>
+
+          <div class="ops-fieldset">
+            <span class="ops-fieldset-title">预算与条件</span>
+            <div class="ops-inline-controls">
+              <input id="taskBudgetTotal" type="number" min="0" step="0.1" placeholder="预算总额" style="flex:1;height:34px">
+              <input id="taskBudgetUnit" type="text" value="万元" placeholder="单位" style="width:72px;height:34px">
+              <input id="taskBudgetMinSelected" type="number" min="0" step="1" placeholder="最少选择" style="width:96px;height:34px">
+            </div>
+            <textarea id="taskConstraints" placeholder="必须满足的条件（每行一项）" style="min-height:36px"></textarea>
+          </div>
+
+          <div class="ops-fieldset">
+            <span class="ops-fieldset-title">小组需要讨论</span>
+            <textarea id="taskDiscussionQuestions" placeholder="讨论问题（每行一项）" style="min-height:36px"></textarea>
+          </div>
+
+          <div class="ops-fieldset">
+            <span class="ops-fieldset-title">小组提交内容</span>
+            <textarea id="taskSubmissionRequirements" placeholder="提交要求（每行一项）" style="min-height:36px"></textarea>
+          </div>
+
+          <div class="ops-fieldset">
+            <span class="ops-fieldset-title">提交前自查</span>
+            <textarea id="taskPreSubmitChecklist" placeholder="自查项（每行一项）" style="min-height:36px"></textarea>
+          </div>
+
+          <div class="ops-actions">
+            <button class="btn small" onclick="createTask()">创建任务</button>
+            <button class="btn small secondary" onclick="saveTaskEdit()">保存修改</button>
+            <button class="btn small secondary" onclick="resetTaskForm()">清空</button>
+            <div id="taskAdminStatus" class="muted" style="font-size:12px"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="ops-section-grid ops-section-grid-two">
+      <section class="card ops-section-card">
+        <div class="card-hd">
+          <h2>课次列表</h2>
+          <div class="ops-inline-controls">
+            <span class="muted" style="font-size:11px">仅草稿课次可删除</span>
+            <button class="btn small secondary" onclick="loadSessionList()">刷新</button>
+          </div>
+        </div>
+        <div class="card-bd" id="sessionList" style="display:grid;gap:12px">
+          <div class="evidence">加载中...</div>
+        </div>
+      </section>
+
+      <section class="card ops-section-card">
+        <div class="card-hd">
+          <h2>任务列表</h2>
+          <div id="taskListSummary" class="muted" style="font-size:12px">0 个任务</div>
+        </div>
+        <div class="card-bd" id="taskCards" style="display:grid;gap:12px">
+          <div class="evidence">加载中...</div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="/static/teacher/teacher-api.js"></script>
+<script src="/static/teacher/session-control.js?v=20260804_1"></script>
+<script>
+  loadCurrentStatus();
+  loadCurrentTaskSummary();
+  loadTaskOptions();
+  loadQuestionnaireSetOptions().then(loadSessionList);
+  loadTaskAdmin();
+  loadExperimentPhases();
+</script>

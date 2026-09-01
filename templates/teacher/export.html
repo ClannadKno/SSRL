@@ -1,0 +1,36 @@
+{# SSRL-ESP Teacher Export Page #}
+
+<div class="container" id="exportApp">
+  <div class="nav" style="margin-bottom:20px">
+    <div class="nav-title">数据导出</div>
+    <div class="nav-user">
+      <a class="btn small secondary" href="/teacher">返回仪表盘</a>
+      <a class="btn small secondary" href="/logout">退出</a>
+    </div>
+  </div>
+
+  <section class="card" style="margin-bottom:16px">
+    <div class="card-hd"><h2>导出内容</h2></div>
+    <div class="card-bd">
+      <p class="muted" style="line-height:1.7;margin:0 0 12px;font-size:12px">
+        所有导出均包含系统当前保存的全部课次和全部小组数据，请妥善保存。导出文件按课次和小组分类打包为 ZIP，只有问卷进入个人目录。
+      </p>
+      <div class="export-links" style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn secondary small" href="/export/messages">导出聊天记录</a>
+        <a class="btn secondary small" href="/export/state-assessments">导出状态判断</a>
+        <a class="btn secondary small" href="/export/strategy-pipeline">导出策略流水</a>
+        <a class="btn secondary small" href="/export/interventions">导出已发布介入</a>
+        <a class="btn secondary small" href="/export/participation">导出参与度摘要</a>
+        <a class="btn secondary small" href="/export/emotion-checkins">导出情绪签到</a>
+        <a class="btn secondary small" href="/export/help-requests">导出主动求助</a>
+        <a class="btn secondary small" href="/export/deliverables">导出最终成果</a>
+        <a class="btn secondary small" href="/export/questionnaires">导出问卷原始数据</a>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn small" href="/export/all">导出全部研究数据</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="/static/teacher/teacher-api.js"></script>

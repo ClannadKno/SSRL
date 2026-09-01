@@ -1,0 +1,25 @@
+[Unit]
+Description=SSRL-ESP application services
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ssrl-esp
+Group=ssrl-esp
+WorkingDirectory=/opt/ssrl-esp
+Environment=PYTHONDONTWRITEBYTECODE=1
+EnvironmentFile=/etc/ssrl-esp/ssrl-esp.env
+ExecStart=/opt/ssrl-esp/start_collab.sh
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+KillMode=control-group
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/ssrl-esp
+
+[Install]
+WantedBy=multi-user.target

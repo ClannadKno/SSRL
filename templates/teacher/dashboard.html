@@ -1,0 +1,58 @@
+{# SSRL-ESP Teacher Dashboard - Research Console Entry #}
+{# This template provides the body content for the teacher dashboard page #}
+
+<div class="container">
+  <!-- Module Entry Grid -->
+  <div class="module-grid">
+    <div class="module-card" onclick="location.href='/teacher/session/control'">
+      <div class="module-icon">实验</div>
+      <h3 class="module-title">实验控制</h3>
+      <p class="module-desc">创建课次、选择角色与任务、开始/结束/归档</p>
+    </div>
+
+    <div class="module-card" onclick="location.href='/teacher/assignment'">
+      <div class="module-icon">分配</div>
+      <h3 class="module-title">Condition 分配</h3>
+      <p class="module-desc">输入 seed、运行分配、查看平衡性、冻结</p>
+    </div>
+
+    <div class="module-card" onclick="location.href='/teacher/statistics'">
+      <div class="module-icon">参与</div>
+      <h3 class="module-title">参与度统计</h3>
+      <p class="module-desc">小组活跃度、发言分布、SSRL 事件统计</p>
+    </div>
+
+    <div class="module-card" onclick="location.href='/teacher/statistics'">
+      <div class="module-icon">情绪</div>
+      <h3 class="module-title">情绪趋势</h3>
+      <p class="module-desc">情绪打卡概览、群体情绪变化趋势</p>
+    </div>
+
+    <div class="module-card" onclick="location.href='/teacher/data-quality'">
+      <div class="module-icon">质量</div>
+      <h3 class="module-title">数据质量与评分</h3>
+      <p class="module-desc">成果评分、数据完整性检查</p>
+    </div>
+
+    <div class="module-card" onclick="location.href='/teacher/export'">
+      <div class="module-icon">导出</div>
+      <h3 class="module-title">历史查询与导出</h3>
+      <p class="module-desc">聊天记录、问卷数据、干预日志导出</p>
+    </div>
+
+    <div class="module-card" onclick="location.href=/teacher/questionnaire-admin">
+      <div class="module-icon" style="background:var(--warning-soft);color:var(--warning-text);border-color:var(--warning-border)">问卷</div>
+      <h3 class="module-title">问卷管理</h3>
+      <p class="module-desc">创建、编辑、启用/停用调查问卷，查看作答统计</p>
+    </div>
+
+    <div class="module-card" onclick="location.href=/teacher/roster">
+      <div class="module-icon" style="background:var(--success-soft);color:var(--success-text);border-color:var(--success-border)">花名</div>
+      <h3 class="module-title">花名册</h3>
+      <p class="module-desc">查看实名学生名单与研究分组信息</p>
+    </div>
+
+  </div>
+
+</div>
+

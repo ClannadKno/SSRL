@@ -1,0 +1,33 @@
+{
+  "name": "collaborative-editor",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tiptap/core": "3.27.0",
+    "@tiptap/extension-collaboration": "3.27.0",
+    "@tiptap/extension-collaboration-caret": "3.27.0",
+    "@tiptap/extension-color": "^3.27.0",
+    "@tiptap/extension-font-family": "^3.27.0",
+    "@tiptap/extension-highlight": "^3.27.0",
+    "@tiptap/extension-link": "3.27.0",
+    "@tiptap/extension-task-item": "^3.27.0",
+    "@tiptap/extension-task-list": "^3.27.0",
+    "@tiptap/extension-text-align": "^3.27.0",
+    "@tiptap/extension-text-style": "^3.27.0",
+    "@tiptap/extension-underline": "3.27.0",
+    "@tiptap/pm": "3.27.0",
+    "@tiptap/starter-kit": "3.27.0",
+    "vue": "3.5.13",
+    "y-websocket": "3.0.0",
+    "yjs": "13.6.31"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5.2.3",
+    "vite": "6.3.5"
+  }
+}

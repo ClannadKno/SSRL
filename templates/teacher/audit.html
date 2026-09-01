@@ -1,0 +1,455 @@
+﻿{# SSRL-ESP Teacher Agent Audit (T5) - Full implementation #}
+{# Uses the same BASE_CSS and page shell pattern as other teacher pages #}
+{# The real_name is passed from the Flask route #}
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>T5 Agent 审计 - SSRL-ESP</title>
+  <style>
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eff6ff;
+  --primary-border: #bfdbfe;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #dc2626;
+  --warning-soft: #fffbeb;
+  --warning-border: #fde68a;
+  --warning-text: #d97706;
+  --success-soft: #f0fdf4;
+  --success-border: #bbf7d0;
+  --success-text: #16a34a;
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-alpha: rgba(255, 255, 255, 0.88);
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  --font: "Microsoft YaHei", "PingFang SC", -apple-system, sans-serif;
+  --font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100%; }
+body { font-family: var(--font); font-size: 14px; line-height: 1.6; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
+a { color: var(--primary); }
+.nav, .container { width: min(1200px, calc(100vw - 32px)); margin: 0 auto; }
+.container { padding: 24px 0 40px; }
+.nav { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.nav-title { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; }
+.nav-title:before { content: ""; display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), #0ea5e9); box-shadow: 0 8px 20px rgba(37,99,235,0.25); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='20' cy='20' r='5' fill='white' stroke='white'/%3E%3Ccircle cx='44' cy='20' r='5' fill='white' stroke='white'/%3E%3Ccircle cx='32' cy='42' r='5' fill='white' stroke='white'/%3E%3Cpath d='M25 20h14M23 25l6 11M41 25l-6 11'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; background-size: 60%; }
+.nav-user { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.3; font-weight: 700; }
+h1 { font-size: 28px; } h2 { font-size: 22px; } h3 { font-size: 18px; }
+.muted, .text-muted { color: var(--text-muted); font-size: 13px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 20px;
+  border: none; border-radius: 9999px; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: all 0.15s ease; text-decoration: none;
+  background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+  white-space: nowrap; line-height: 1;
+}
+.btn:hover { background: var(--primary-hover); transform: translateY(-1px); text-decoration: none; }
+.btn.secondary { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1.5px var(--border); }
+.btn.secondary:hover { background: var(--border-light); transform: none; }
+.btn.small { height: 32px; padding: 0 16px; font-size: 12px; }
+.btn.danger { background: var(--danger-text); box-shadow: 0 4px 14px rgba(220,38,38,0.25); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 700; line-height: 1.5;
+  background: var(--primary-soft); color: var(--primary);
+  border: 1px solid var(--primary-border); white-space: nowrap;
+}
+.badge.high { background: var(--danger-soft); color: var(--danger-text); border-color: var(--danger-border); }
+.badge.mid { background: var(--warning-soft); color: var(--warning-text); border-color: var(--warning-border); }
+.badge.low { background: var(--success-soft); color: var(--success-text); border-color: var(--success-border); }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden;
+}
+.card-hd {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--border-light);
+}
+.card-hd h2 { font-size: 18px; font-weight: 700; }
+.card-bd { padding: 20px; }
+
+.evidence {
+  padding: 12px 16px; border-radius: 12px;
+  background: var(--primary-soft); border: 1px solid var(--primary-border);
+  color: var(--text-secondary); line-height: 1.6; font-size: 13px;
+}
+
+input, select, textarea {
+  width: 100%; height: 42px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  padding: 0 16px; color: var(--text); font-size: 13px;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+}
+textarea { height: auto; min-height: 80px; padding: 12px 16px; resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before { content: ""; position: absolute; left: 10px; top: 8px; bottom: 8px; width: 2px; background: var(--border); border-radius: 2px; }
+.timeline-item { position: relative; margin-bottom: 12px; cursor: pointer; }
+.timeline-dot { position: absolute; left: -22px; top: 6px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); }
+.timeline-dot.detector { border-color: var(--primary); background: var(--primary-soft); }
+.timeline-dot.gate { border-color: var(--warning-text); background: var(--warning-soft); }
+.timeline-dot.review { border-color: #0f766e; background: #ccfbf1; }
+.timeline-dot.intervention { border-color: var(--danger-text); background: var(--danger-soft); }
+.timeline-dot.uptake { border-color: var(--success-text); background: var(--success-soft); }
+.timeline-dot.regulation { border-color: #8b5cf6; background: #f5f3ff; }
+.timeline-dot.correction { border-color: #f59e0b; background: #fffbeb; }
+.timeline-dot.unblind { border-color: var(--text-muted); background: var(--border-light); }
+.timeline-card { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); transition: all 0.12s; }
+.timeline-card:hover { border-color: var(--primary-border); box-shadow: var(--shadow-sm); }
+.timeline-card.selected { border-color: var(--primary); background: var(--primary-soft); }
+.timeline-time { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.timeline-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.timeline-preview { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Detail panel */
+.detail-panel { display: none; margin-top: 12px; }
+.detail-panel.visible { display: block; }
+.detail-grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.detail-field { display: grid; gap: 2px; }
+.detail-label { font-size: 11px; color: var(--text-muted); font-weight: 700; }
+.detail-value { font-size: 13px; color: var(--text); word-break: break-all; }
+.detail-value.mono { font-family: var(--font-mono); font-size: 12px; }
+
+/* Modal overlay */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(15,23,42,0.45); align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.visible { display: flex; }
+.modal-box { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-lg); width: min(480px, 92vw); max-height: 90vh; overflow-y: auto; }
+.modal-hd { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--border); }
+.modal-hd h2 { font-size: 18px; }
+.modal-bd { padding: 20px; display: grid; gap: 12px; }
+.modal-ft { display: flex; gap: 8px; justify-content: flex-end; padding: 16px 20px; border-top: 1px solid var(--border); background: var(--border-light); }
+
+/* Blinding banner */
+.blind-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--primary-border); background: var(--primary-soft); margin-bottom: 16px; flex-wrap: wrap; }
+.blind-banner.unblinded { border-color: var(--success-border); background: var(--success-soft); }
+.blind-banner .blind-text { font-size: 12px; color: var(--text-secondary); }
+.blind-banner.unblinded .blind-text { color: var(--success-text); font-weight: 700; }
+
+/* Filter layout */
+.filter-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); align-items: end; }
+.filter-actions { display: flex; gap: 8px; align-items: end; }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; }
+
+/* Error toast */
+#audit-error { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; padding: 12px 24px; border-radius: 12px; background: var(--danger-soft); border: 1px solid var(--danger-border); color: var(--danger-text); font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); max-width: 90vw; }
+
+@media (max-width: 768px) {
+  .container { width: calc(100vw - 16px); padding: 16px 0 24px; }
+  .nav { min-height: 56px; }
+  .card-hd, .card-bd { padding: 12px 16px; }
+  .filter-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Status notice */
+.notice-card { padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 13px; }
+.notice-warning { background: var(--warning-soft); border-color: var(--warning-border); color: var(--warning-text); }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.stat-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--surface); display: grid; gap: 2px; }
+.stat-card strong { font-size: 22px; line-height: 1.2; }
+.stat-label, .stats-note { font-size: 12px; color: var(--text-muted); }
+.stats-note { margin-top: 10px; }
+.evidence-seq-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.evidence-seq { border: 1px solid var(--primary-border); background: var(--primary-soft); color: var(--primary); border-radius: 9999px; padding: 3px 10px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.evidence-seq:hover { border-color: var(--primary); }
+.evidence-seq.missing { border-color: var(--warning-border); background: var(--warning-soft); color: var(--warning-text); }
+.message-flow-actions { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+.audit-message-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; background: var(--surface); }
+.audit-message-card.agent { background: #f8fafc; }
+.audit-message-card.evidence-hit { border-color: var(--warning-text); background: var(--warning-soft); }
+.audit-message-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.audit-message-content { color: var(--text); white-space: pre-wrap; word-break: break-word; }
+
+@media print {
+  .audit-message-card { break-inside: avoid; page-break-inside: avoid; }
+  .audit-message-content { overflow: visible; }
+}
+
+/* Shared teacher global status bar */
+.gs-bar { background: var(--surface-alpha); border-bottom: 1px solid var(--border-light); padding: 6px 0; position: sticky; top: 0; z-index: 99; backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); font-size: 12px; line-height: 1.4; }
+.gs-inner { width: min(1200px, calc(100vw - 32px)); margin: 0 auto; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.gs-item { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0; }
+.gs-title-item { max-width: 160px; overflow: hidden; }
+.gs-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px; display: inline-block; vertical-align: middle; }
+.gs-label { color: var(--text-muted); font-weight: 600; margin-right: 2px; }
+.gs-divider { display: inline-block; width: 1px; height: 14px; background: var(--border-light); flex-shrink: 0; }
+.gs-badge { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 9999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.gs-badge-on, .gs-badge-running { background: var(--success-soft); color: var(--success-text); border: 1px solid var(--success-border); }
+.gs-badge-off, .gs-badge-archived { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border-light); }
+.gs-badge-draft { background: var(--primary-soft); color: var(--primary); border: 1px solid var(--primary-border); }
+.gs-badge-ended, .gs-badge-frozen, .gs-badge-warn { background: var(--warning-soft); color: var(--warning-text); border: 1px solid var(--warning-border); }
+.gs-badge-critical { background: var(--danger-soft); color: var(--danger-text); border: 1px solid var(--danger-border); }
+</style>
+  <link rel="stylesheet" href="/static/ui/design-tokens.css">
+  <link rel="stylesheet" href="/static/ui/ui-primitives.css">
+  <link rel="stylesheet" href="/static/ui/ui-motion.css">
+  <link rel="stylesheet" href="/static/ui/teacher-analytics.css">
+</head>
+<body class="ui-page-background ui-bg-analytics">
+  <div class="app-shell audit-app-shell teacher-analytics-page audit-page">
+    <!-- Navigation -->
+    <div class="nav" style="margin-bottom: 0;">
+      <div class="nav-title">T5 Agent 审计</div>
+      <div class="nav-user">
+        <span>{{ real_name }}</span>
+        <a class="btn small secondary" href="/teacher">返回仪表盘</a>
+        <a class="btn small secondary" href="/logout">退出</a>
+      </div>
+    </div>
+
+    <div id="gsBar" class="gs-bar">
+      <div class="gs-inner" id="gsContent">
+        <span class="gs-item"><span class="gs-label">加载中...</span></span>
+      </div>
+    </div>
+
+    <div class="container">
+      <header class="analytics-page-header">
+        <div>
+          <span class="analytics-eyebrow">Teacher Analytics Workspace</span>
+          <h1>Agent 审计</h1>
+          <p>按课次、小组与协作状态追溯检测、介入、采纳和人工校正记录。</p>
+        </div>
+        <span class="analytics-page-badge">审计追溯</span>
+      </header>
+
+      <main class="analytics-workspace ui-workspace audit-workspace">
+      <!-- Filter Area -->
+      <section class="card analytics-filter-card">
+        <div class="card-hd"><h2>筛选条件</h2></div>
+        <div class="card-bd">
+          <div class="filter-grid">
+            <div>
+              <label>课次</label>
+              <select id="audit-session-select">
+                <option value="">-- 请选择课次 --</option>
+              </select>
+            </div>
+            <div>
+              <label>小组</label>
+              <select id="audit-group-select">
+                <option value="">-- 请选择小组 --</option>
+              </select>
+            </div>
+            <div>
+              <label>任务</label>
+              <select id="audit-task-select">
+                <option value="">-- 全部任务 --</option>
+              </select>
+            </div>
+            <div>
+              <label>协作状态</label>
+              <select id="audit-state-filter">
+                <option value="">-- 全部状态 --</option>
+                <optgroup label="最终主子状态">
+                  <option value="standard">常规协作</option>
+                  <option value="deep_thinking">深度思考</option>
+                  <option value="execution_progress">执行推进</option>
+                  <option value="constructive_conflict">建设性冲突</option>
+                  <option value="interpersonal_conflict">人际性冲突</option>
+                  <option value="confusion">困惑</option>
+                  <option value="frustration">挫败</option>
+                  <option value="burnout">倦怠</option>
+                  <option value="off_topic_self_regulated">跑题已自调节</option>
+                  <option value="off_topic_unregulated">跑题未自调节</option>
+                  <option value="perfunctory_detachment">敷衍脱离</option>
+                  <option value="individual_marginalization">个体边缘化</option>
+                </optgroup>
+                <optgroup label="过程状态">
+                  <option value="observing">观察中</option>
+                  <option value="unclassified">未分类</option>
+                </optgroup>
+              </select>
+            </div>
+            <div>
+              <label>是否发生干预</label>
+              <select id="audit-intervention-filter">
+                <option value="">-- 全部 --</option>
+                <option value="yes">有干预</option>
+                <option value="no">无干预</option>
+              </select>
+            </div>
+            <div>
+              <label>是否需人工复核</label>
+              <select id="audit-review-filter">
+                <option value="">-- 全部 --</option>
+                <option value="yes">需要</option>
+                <option value="no">不需要</option>
+              </select>
+            </div>
+            <div>
+              <label>智能体类型</label>
+              <select id="audit-agent-filter">
+                <option value="">-- 全部 --</option>
+                <option value="emotion">情绪智能体</option>
+                <option value="strategy">策略智能体</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="btn small" onclick="window.loadAuditTimeline()">查询审计</button>
+              <button class="btn small secondary" onclick="window.resetFilters()">重置</button>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text-muted)">
+            <span id="audit-filter-info">当前为默认直接显示视图</span>
+          </div>
+        </div>
+      </section>
+
+      <div id="audit-blinding-notice" class="blind-banner unblinded" style="margin-bottom:16px">
+        <span class="blind-text">当前为直接显示视图：审计数据默认可见。</span>
+      </div>
+
+      <!-- Error area -->
+      <div id="audit-error"></div>
+
+      <!-- Traceability Warnings -->
+      <div id="audit-traceability" style="margin-bottom:16px"></div>
+
+      <!-- Main content: Timeline + Detail -->
+      <div id="audit-main-area">
+        <div class="empty-state ui-empty-state" id="audit-empty-state">
+          <p>暂无审计记录</p>
+          <p style="font-size:12px;margin-top:8px">请选择课次和小组，然后点击"查询审计"</p>
+        </div>
+
+        <!-- Timeline + Detail layout -->
+        <div id="audit-timeline-area" style="display:none">
+          <section class="card analytics-data-card audit-timeline-card">
+            <div class="card-hd">
+              <h2>审计时间线</h2>
+              <span id="audit-event-count" class="badge">0 条</span>
+            </div>
+            <div class="card-bd">
+              <!-- Timeline legend -->
+              <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;font-size:11px;color:var(--text-muted)">
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--primary-soft);border:2px solid var(--primary);margin-right:4px;vertical-align:middle"></span>检测器</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--warning-soft);border:2px solid var(--warning-text);margin-right:4px;vertical-align:middle"></span>门控</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ccfbf1;border:2px solid #0f766e;margin-right:4px;vertical-align:middle"></span>策略复核</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--danger-soft);border:2px solid var(--danger-text);margin-right:4px;vertical-align:middle"></span>干预</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--success-soft);border:2px solid var(--success-text);margin-right:4px;vertical-align:middle"></span>采纳</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f5f3ff;border:2px solid #8b5cf6;margin-right:4px;vertical-align:middle"></span>自主调节</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fffbeb;border:2px solid #f59e0b;margin-right:4px;vertical-align:middle"></span>人工校正</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--border-light);border:2px solid var(--text-muted);margin-right:4px;vertical-align:middle"></span>审计查看</span>
+              </div>
+              <div class="timeline" id="audit-timeline"></div>
+            </div>
+          </section>
+
+          <section class="card analytics-metric-card">
+            <div class="card-hd"><h2>统计口径</h2></div>
+            <div class="card-bd" id="audit-stats"></div>
+          </section>
+
+          <!-- Detail Panel -->
+          <section class="card analytics-detail-card" id="audit-detail-section">
+            <div class="card-hd">
+              <h2 id="audit-detail-title">详情</h2>
+            </div>
+            <div class="card-bd" id="audit-detail-content">
+              <div class="empty-state ui-empty-state">点击时间线上的记录查看详情</div>
+            </div>
+          </section>
+
+          <section class="card analytics-data-card">
+            <div class="card-hd"><h2>消息流与证据定位</h2></div>
+            <div class="card-bd" id="audit-message-flow"></div>
+          </section>
+        </div>
+      </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Manual Correction Modal -->
+  <div class="modal-overlay ui-modal" id="correction-modal">
+    <div class="modal-box ui-modal__surface">
+      <div class="modal-hd">
+        <h2>人工采纳校正</h2>
+        <button class="btn small secondary" onclick="window.closeCorrectionModal()">关闭</button>
+      </div>
+      <div class="modal-bd">
+        <div>
+          <label>采纳类型</label>
+          <select id="correction-type-select">
+            <option value="ignored">ignored — 忽略</option>
+            <option value="acknowledged">acknowledged — 知晓</option>
+            <option value="discussed">discussed — 讨论</option>
+            <option value="adopted">adopted — 采纳</option>
+            <option value="adapted">adapted — 调整后采纳</option>
+            <option value="rejected">rejected — 拒绝</option>
+          </select>
+        </div>
+        <div>
+          <label>校正理由 <span style="color:var(--danger-text)">* 必填</span></label>
+          <textarea id="correction-reason" placeholder="请填写人工校正的理由..." style="min-height:60px"></textarea>
+        </div>
+        <div id="correction-status" class="muted" style="font-size:12px"></div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn small secondary" onclick="window.closeCorrectionModal()">取消</button>
+        <button class="btn small" onclick="window.submitManualCorrection()">保存校正</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compatibility modal for legacy unblind controls; direct-view audit keeps it hidden. -->
+  <div class="modal-overlay ui-modal" id="unblind-modal">
+    <div class="modal-box ui-modal__surface">
+      <div class="modal-hd">
+        <h2>申请解盲</h2>
+        <button class="btn small secondary" onclick="window.closeUnblindModal()">关闭</button>
+      </div>
+      <div class="modal-bd">
+        <div>
+          <label>解盲理由</label>
+          <textarea id="unblind-reason" placeholder="请填写解盲理由..." style="min-height:60px"></textarea>
+        </div>
+        <div id="unblind-status" class="muted" style="font-size:12px"></div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn small secondary" onclick="window.closeUnblindModal()">取消</button>
+        <button class="btn small" onclick="window.submitUnblindRequest()">提交申请</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/teacher/teacher-api.js"></script>
+  <script src="/static/teacher/global-status.js"></script>
+  <script src="/static/teacher/agent-audit.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      window.initAgentAudit();
+    });
+  </script>
+</body>
+</html>

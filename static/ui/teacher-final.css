@@ -1,0 +1,258 @@
+/*
+ * Batch 10 remaining teacher pages and restricted-state surfaces.
+ * Scoped selectors keep prior batch workspaces and the collaborative editor stable.
+ */
+.teacher-final-page {
+  display: grid;
+  gap: var(--ui-space-24);
+  max-width: min(1280px, calc(100vw - 32px));
+}
+
+.teacher-final-page .final-page-header,
+.restricted-state-shell .restricted-state-header {
+  display: grid;
+  gap: var(--ui-space-8);
+  padding-top: var(--ui-space-8);
+}
+
+.teacher-final-page .final-page-header h1,
+.restricted-state-shell .restricted-state-header h1 {
+  margin: 0;
+  color: var(--ui-text-strong);
+  font-size: 1.85rem;
+  font-weight: 800;
+}
+
+.teacher-final-page .final-page-header p,
+.restricted-state-shell .restricted-state-header p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--ui-text-secondary);
+  font-size: 0.92rem;
+}
+
+.teacher-final-page .final-workspace {
+  display: grid;
+  gap: var(--ui-space-20);
+  padding: var(--ui-space-24);
+  border-radius: var(--ui-radius-workspace);
+  background: var(--ui-glass-workspace);
+  box-shadow: var(--ui-shadow-workspace);
+}
+
+.teacher-final-page .final-toolbar-card,
+.teacher-final-page .final-section-card,
+.teacher-final-page .card {
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-card);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: var(--ui-shadow-card);
+}
+
+.teacher-final-page .card-hd,
+.teacher-final-page .final-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-12);
+  min-height: 60px;
+  border-bottom: 1px solid rgba(145, 169, 207, 0.18);
+  border-radius: var(--ui-radius-card) var(--ui-radius-card) 0 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(248, 250, 255, 0.48));
+  padding: var(--ui-space-16) var(--ui-space-20);
+}
+
+.teacher-final-page .card-hd h2,
+.teacher-final-page .final-card-head h2,
+.teacher-final-page h3 {
+  margin: 0;
+  color: var(--ui-text-strong);
+}
+
+.teacher-final-page .card-bd,
+.teacher-final-page .final-card-body {
+  padding: var(--ui-space-20);
+}
+
+.teacher-final-page .final-grid,
+.teacher-final-page .legacy-questionnaire-grid {
+  display: grid;
+  gap: var(--ui-space-20);
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+
+.teacher-final-page .final-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-8);
+}
+
+.teacher-final-page .qm-tab[aria-selected="true"] {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: linear-gradient(135deg, var(--ui-brand-900), var(--ui-brand-600));
+  color: var(--ui-text-on-brand);
+}
+
+.teacher-final-page .qm-tab-content {
+  min-height: 200px;
+}
+
+.teacher-final-page .qm-form-grid {
+  display: grid;
+  gap: var(--ui-space-12);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.teacher-final-page input,
+.teacher-final-page select,
+.teacher-final-page textarea {
+  border-color: var(--ui-border-soft);
+  border-radius: var(--ui-radius-control);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.teacher-final-page input:focus,
+.teacher-final-page select:focus,
+.teacher-final-page textarea:focus {
+  outline: 0;
+  border-color: var(--ui-brand-600);
+  box-shadow: var(--ui-focus-ring);
+}
+
+.teacher-final-page .group-card {
+  border: 1px solid rgba(145, 169, 207, 0.20);
+  border-radius: var(--ui-radius-panel);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--ui-shadow-control);
+}
+
+.teacher-final-page .final-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(145, 169, 207, 0.18);
+  border-radius: var(--ui-radius-panel);
+  background: var(--ui-surface-solid);
+}
+
+.teacher-final-page .final-data-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  color: var(--ui-text-primary);
+  font-size: 0.82rem;
+}
+
+.teacher-final-page .final-data-table th,
+.teacher-final-page .final-data-table td {
+  padding: var(--ui-space-12) var(--ui-space-16);
+  border-bottom: 1px solid rgba(145, 169, 207, 0.16);
+  text-align: left;
+}
+
+.teacher-final-page .final-data-table th {
+  background: #f3f7ff;
+  color: var(--ui-text-strong);
+  font-weight: 800;
+}
+
+.teacher-final-page .qm-detail-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ui-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ui-space-20);
+  background: rgba(19, 43, 79, 0.22);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.teacher-final-page .qm-detail-modal > div {
+  width: min(720px, calc(100vw - 32px));
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid var(--ui-border-glass);
+  border-radius: var(--ui-radius-card);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--ui-shadow-workspace);
+  padding: var(--ui-space-24);
+}
+
+.teacher-final-page .final-status-message,
+.teacher-final-page .ui-loading-state,
+.teacher-final-page .ui-empty-state,
+.teacher-final-page .ui-error-state {
+  min-height: 48px;
+  border: 1px solid rgba(145, 169, 207, 0.18);
+  border-radius: var(--ui-radius-panel);
+  background: rgba(255, 255, 255, 0.72);
+  padding: var(--ui-space-14, 14px) var(--ui-space-16);
+}
+
+.teacher-final-page .ui-error-state {
+  border-color: var(--ui-danger-border);
+  background: var(--ui-danger-surface);
+  color: var(--ui-danger-text);
+}
+
+.restricted-state-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--ui-space-24);
+}
+
+.restricted-state-shell .restricted-state-card {
+  width: min(560px, calc(100vw - 32px));
+  display: grid;
+  gap: var(--ui-space-20);
+  padding: var(--ui-space-32);
+  border: 1px solid var(--ui-border-glass);
+  border-radius: var(--ui-radius-workspace);
+  background: var(--ui-glass-workspace);
+  box-shadow: var(--ui-shadow-workspace);
+  -webkit-backdrop-filter: blur(var(--ui-blur-workspace));
+  backdrop-filter: blur(var(--ui-blur-workspace));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .teacher-final-page .final-workspace,
+  .restricted-state-shell .restricted-state-card {
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+@media (max-width: 900px) {
+  .teacher-final-page .final-workspace {
+    padding: var(--ui-space-20);
+  }
+
+  .teacher-final-page .final-grid,
+  .teacher-final-page .legacy-questionnaire-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-final-page {
+    max-width: min(100%, calc(100vw - 24px));
+  }
+
+  .teacher-final-page .final-page-header h1,
+  .restricted-state-shell .restricted-state-header h1 {
+    font-size: 1.55rem;
+  }
+
+  .teacher-final-page .final-workspace,
+  .restricted-state-shell .restricted-state-card {
+    border-radius: var(--ui-radius-card);
+    padding: var(--ui-space-16);
+  }
+
+  .teacher-final-page .card-hd,
+  .teacher-final-page .final-card-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

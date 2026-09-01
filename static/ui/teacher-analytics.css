@@ -1,0 +1,461 @@
+/*
+ * Batch 3 — shared Teacher Analytics Workspace.
+ * All rules are scoped so other teacher, student, and editor pages keep their
+ * existing rendering while the three analytics pages migrate progressively.
+ */
+
+.teacher-analytics-page {
+  --analytics-series-1: #2f6f9f;
+  --analytics-series-2: #b95858;
+  --analytics-series-3: #3f816a;
+  --analytics-series-4: #b8782f;
+  --analytics-series-5: #6e64a5;
+  --analytics-series-6: #3f8190;
+  --analytics-series-7: #9b5d7e;
+  --analytics-series-8: #71843c;
+  --analytics-series-9: #397d78;
+  --analytics-series-10: #765aa0;
+  --analytics-series-11: #99643c;
+  --analytics-series-12: #4d6172;
+  display: grid;
+  gap: var(--ui-space-24);
+  min-width: 0;
+}
+
+.teacher-analytics-page .analytics-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--ui-space-24);
+  padding: 4px 4px 0;
+}
+
+.teacher-analytics-page .analytics-page-header h1 {
+  margin: 4px 0 6px;
+  color: var(--ui-text-strong);
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  letter-spacing: -0.035em;
+}
+
+.teacher-analytics-page .analytics-page-header p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--ui-text-secondary);
+  font-size: var(--text-sm, 14px);
+}
+
+.teacher-analytics-page .analytics-eyebrow {
+  color: var(--ui-brand-700);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.teacher-analytics-page .analytics-page-badge {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0 var(--ui-space-16);
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-brand-soft);
+  color: var(--ui-brand-800);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.teacher-analytics-page .analytics-workspace {
+  display: grid;
+  gap: var(--ui-space-16);
+  min-width: 0;
+  padding: clamp(16px, 2.2vw, 28px);
+  border: 1px solid var(--ui-border-glass);
+  border-radius: var(--ui-radius-workspace);
+  background: var(--ui-glass-workspace);
+  box-shadow: var(--ui-shadow-workspace);
+}
+
+.teacher-analytics-page .analytics-workspace > .card,
+.teacher-analytics-page .analytics-main-grid > .card,
+.teacher-analytics-page .emotion-grid > .card,
+.teacher-analytics-page .emotion-side > .card,
+.teacher-analytics-page #audit-timeline-area > .card {
+  margin: 0 !important;
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-panel);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--ui-shadow-control);
+}
+
+.teacher-analytics-page .analytics-workspace .card-hd {
+  min-height: 58px;
+  padding: var(--ui-space-16) var(--ui-space-20);
+  border-bottom: 1px solid var(--ui-border-soft);
+  background: linear-gradient(
+    135deg,
+    rgba(247, 250, 255, 0.98),
+    rgba(237, 243, 253, 0.84)
+  );
+}
+
+.teacher-analytics-page .analytics-workspace .card-hd h2 {
+  color: var(--ui-text-strong);
+  font-size: 16px;
+}
+
+.teacher-analytics-page .analytics-workspace .card-bd {
+  padding: var(--ui-space-20);
+}
+
+.teacher-analytics-page .analytics-filter-card {
+  border-color: var(--ui-border-strong);
+  background: var(--ui-glass-card);
+  box-shadow: var(--ui-shadow-card);
+  -webkit-backdrop-filter: blur(var(--ui-blur-card));
+  backdrop-filter: blur(var(--ui-blur-card));
+}
+
+.teacher-analytics-page .analytics-filter-card .card-hd {
+  background: rgba(245, 249, 255, 0.76);
+}
+
+.teacher-analytics-page .analytics-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ui-space-12);
+  align-items: end;
+}
+
+.teacher-analytics-page .analytics-filter-card label,
+.teacher-analytics-page .analytics-workspace label {
+  color: var(--ui-text-secondary);
+  font-weight: 700;
+}
+
+.teacher-analytics-page .analytics-filter-card input,
+.teacher-analytics-page .analytics-filter-card select,
+.teacher-analytics-page .emotion-toolbar input,
+.teacher-analytics-page .emotion-toolbar select,
+.teacher-analytics-page .modal-box input,
+.teacher-analytics-page .modal-box select,
+.teacher-analytics-page .modal-box textarea {
+  min-height: 42px;
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-small);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ui-text-primary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.teacher-analytics-page .analytics-filter-card input:focus,
+.teacher-analytics-page .analytics-filter-card select:focus,
+.teacher-analytics-page .emotion-toolbar input:focus,
+.teacher-analytics-page .emotion-toolbar select:focus,
+.teacher-analytics-page .modal-box input:focus,
+.teacher-analytics-page .modal-box select:focus,
+.teacher-analytics-page .modal-box textarea:focus {
+  border-color: var(--ui-brand-600);
+  box-shadow: var(--ui-focus-ring);
+  outline: none;
+}
+
+.teacher-analytics-page .analytics-metric-card .card-bd {
+  background: var(--ui-surface-solid);
+}
+
+.teacher-analytics-page .analytics-metric-grid,
+.teacher-analytics-page .kpi-grid,
+.teacher-analytics-page .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+  gap: var(--ui-space-12);
+}
+
+.teacher-analytics-page .analytics-metric-grid > *,
+.teacher-analytics-page .kpi-grid > .kpi,
+.teacher-analytics-page .stats-grid > .stat-card {
+  min-height: 84px;
+  margin: 0;
+  padding: var(--ui-space-16);
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-control);
+  background: var(--ui-surface-solid);
+  color: var(--ui-text-secondary);
+  box-shadow: 0 7px 20px rgba(54, 83, 137, 0.045);
+}
+
+.teacher-analytics-page .analytics-metric-grid > .badge {
+  align-items: flex-start;
+  justify-content: center;
+  white-space: normal;
+}
+
+.teacher-analytics-page .kpi-grid > .kpi strong,
+.teacher-analytics-page .stats-grid > .stat-card strong {
+  color: var(--ui-text-strong);
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.teacher-analytics-page .analytics-main-grid {
+  display: grid;
+  gap: var(--ui-space-16);
+  min-width: 0;
+}
+
+.teacher-analytics-page .analytics-main-grid-balanced {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.teacher-analytics-page .analytics-chart-card,
+.teacher-analytics-page .analytics-table-card,
+.teacher-analytics-page .analytics-data-card,
+.teacher-analytics-page .analytics-summary-card,
+.teacher-analytics-page .analytics-detail-card {
+  background: var(--ui-surface-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.teacher-analytics-page .analytics-chart-card .card-bd,
+.teacher-analytics-page .analytics-table-card .card-bd,
+.teacher-analytics-page .analytics-data-card .card-bd {
+  background: var(--ui-surface-solid);
+}
+
+.teacher-analytics-page .analytics-table-card .card-bd,
+.teacher-analytics-page #audit-message-flow,
+.teacher-analytics-page #audit-detail-content {
+  overflow-x: auto;
+}
+
+.teacher-analytics-page .analytics-table-card table {
+  min-width: 620px;
+}
+
+.teacher-analytics-page .analytics-table-card thead,
+.teacher-analytics-page .analytics-table-card thead tr {
+  background: var(--ui-bg-soft) !important;
+}
+
+.teacher-analytics-page .analytics-table-card tbody tr:hover {
+  background: rgba(231, 238, 255, 0.5);
+}
+
+.teacher-analytics-page .emotion-grid {
+  gap: var(--ui-space-16);
+}
+
+.teacher-analytics-page .emotion-side {
+  gap: var(--ui-space-16);
+}
+
+.teacher-analytics-page .emotion-message,
+.teacher-analytics-page .emotion-intervention,
+.teacher-analytics-page .timeline-card,
+.teacher-analytics-page .audit-message-card {
+  border-color: var(--ui-border-soft);
+  background: var(--ui-surface-solid);
+  box-shadow: none;
+}
+
+.teacher-analytics-page .emotion-message.agent {
+  border-left: 3px solid var(--ui-brand-600);
+  background: rgba(238, 244, 255, 0.92);
+}
+
+.teacher-analytics-page .emotion-state-band,
+.teacher-analytics-page .emotion-lane-body,
+.teacher-analytics-page .emotion-agent-lane,
+.teacher-analytics-page .emotion-bar-track,
+.teacher-analytics-page .participation-minute-track {
+  background: var(--ui-surface-soft);
+}
+
+.teacher-analytics-page .evidence,
+.teacher-analytics-page .emotion-empty,
+.teacher-analytics-page .empty-state {
+  padding: var(--ui-space-24);
+  border: 1px dashed var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+  text-align: center;
+}
+
+.teacher-analytics-page .evidence[style*="danger"],
+.teacher-analytics-page .emotion-empty[style*="danger"] {
+  border-color: var(--ui-danger-border);
+  background: var(--ui-danger-surface);
+  color: var(--ui-danger-text) !important;
+}
+
+.teacher-analytics-page .modal-overlay {
+  z-index: var(--ui-z-modal);
+  background: rgba(19, 43, 79, 0.38);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.teacher-analytics-page .modal-box {
+  border: 1px solid var(--ui-border-glass);
+  border-radius: var(--ui-radius-panel);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--ui-shadow-workspace);
+}
+
+.teacher-analytics-page #audit-error {
+  z-index: var(--ui-z-toast);
+  border-radius: var(--ui-radius-control);
+}
+
+.teacher-analytics-page .gs-bar {
+  z-index: var(--ui-z-sticky);
+}
+
+.audit-page .audit-app-shell {
+  min-height: 100vh;
+}
+
+.audit-page .nav-title::before {
+  content: "A";
+  color: var(--ui-text-on-brand);
+  background: linear-gradient(
+    135deg,
+    var(--ui-brand-800),
+    var(--ui-brand-600)
+  );
+  box-shadow: 0 8px 22px rgba(36, 109, 165, 0.22);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.audit-page .nav,
+.audit-page .container,
+.audit-page .gs-inner {
+  width: min(1240px, calc(100vw - 32px));
+}
+
+.audit-page .container {
+  display: grid;
+  gap: var(--ui-space-24);
+}
+
+.audit-page .audit-workspace,
+.audit-page #audit-timeline-area {
+  display: grid;
+  gap: var(--ui-space-16);
+}
+
+.audit-page .blind-banner {
+  margin: 0 !important;
+  border-color: var(--ui-success-border);
+  border-radius: var(--ui-radius-control);
+  background: var(--ui-success-surface);
+}
+
+.audit-page #audit-traceability {
+  margin: 0 !important;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .teacher-analytics-page .analytics-workspace,
+  .teacher-analytics-page .analytics-filter-card,
+  .teacher-analytics-page .modal-box {
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+@media (max-width: 1100px) {
+  .teacher-analytics-page .emotion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-analytics-page .emotion-side {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .teacher-analytics-page .analytics-main-grid-balanced,
+  .teacher-analytics-page .emotion-side {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-analytics-page .analytics-filter-grid,
+  .teacher-analytics-page .emotion-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .teacher-analytics-page .analytics-page-header {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-analytics-page {
+    gap: var(--ui-space-16);
+  }
+
+  .teacher-analytics-page .analytics-page-header {
+    flex-direction: column;
+    gap: var(--ui-space-12);
+  }
+
+  .teacher-analytics-page .analytics-workspace {
+    padding: var(--ui-space-12);
+    border-radius: var(--ui-radius-panel);
+  }
+
+  .teacher-analytics-page .analytics-workspace .card-hd,
+  .teacher-analytics-page .analytics-workspace .card-bd {
+    padding: var(--ui-space-12) var(--ui-space-16);
+  }
+
+  .teacher-analytics-page .analytics-metric-grid,
+  .teacher-analytics-page .kpi-grid,
+  .teacher-analytics-page .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .audit-page .nav,
+  .audit-page .container,
+  .audit-page .gs-inner {
+    width: calc(100vw - 16px);
+  }
+
+  .audit-page .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-analytics-page .analytics-filter-grid,
+  .teacher-analytics-page .emotion-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .audit-page .filter-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-analytics-page .analytics-metric-grid,
+  .teacher-analytics-page .kpi-grid,
+  .teacher-analytics-page .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teacher-analytics-page .timeline-card,
+  .teacher-analytics-page .emotion-message,
+  .teacher-analytics-page .emotion-intervention,
+  .teacher-analytics-page .card,
+  .teacher-analytics-page .btn {
+    transition: none !important;
+    transform: none !important;
+  }
+}

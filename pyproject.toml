@@ -1,0 +1,25 @@
+[project]
+name = "ssrl-esp"
+version = "0.1.0"
+description = "Experimental platform for socially shared regulation of learning research"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.0,<4.0",
+    "huey>=2.5,<3.0",
+    "httpx>=0.28.0",
+    "pycrdt>=0.12.0",
+    "pycrdt-websocket>=0.12.0",
+    "uvicorn[standard]>=0.30,<1.0",
+    "waitress>=3.0,<4.0",
+    "websockets>=12.0,<16.0",
+    "werkzeug>=3.0,<4.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0,<9.0",
+]
+
+[tool.uv]
+package = false

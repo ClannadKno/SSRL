@@ -1,0 +1,341 @@
+﻿{# SSRL-ESP Teacher Questionnaire Results Page #}
+
+<div class="container">
+  <div class="nav" style="margin-bottom:20px">
+    <div class="nav-title">问卷结果查看</div>
+    <div class="nav-user">
+      <a class="btn small secondary" href="/teacher/questionnaire-admin">问卷管理</a>
+      <a class="btn small secondary" href="/teacher">返回仪表盘</a>
+      <a class="btn small secondary" href="/logout">退出</a>
+    </div>
+  </div>
+
+  <!-- Session Selector -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-hd">
+      <h2>选择课次与问卷</h2>
+    </div>
+    <div class="card-bd">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <select id="sessionSelect" style="flex:2;min-width:180px;height:36px" onchange="onSessionChange()">
+          <option value="">-- 选择课次 --</option>
+        </select>
+        <select id="questionnaireSelect" style="flex:2;min-width:180px;height:36px" onchange="onQuestionnaireChange()">
+          <option value="">-- 选择问卷 --</option>
+        </select>
+        <select id="stageSelect" style="flex:1;min-width:100px;height:36px" onchange="loadAll()">
+          <option value="pre">前测</option>
+          <option value="post">后测</option>
+        </select>
+        <button class="btn small" onclick="loadAll()">加载数据</button>
+      </div>
+      <div id="statusMessage" class="muted" style="font-size:12px;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- Completion Overview -->
+  <div id="completionSection" style="display:none">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-hd">
+        <h2>完成状态概览</h2>
+      </div>
+      <div class="card-bd" id="completionTable">
+        <div class="evidence">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Results Table -->
+  <div id="resultsSection" style="display:none">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-hd">
+        <h2>学生结果表</h2>
+        <span id="resultCount" class="muted" style="font-size:12px"></span>
+      </div>
+      <div class="card-bd" id="resultsTable">
+        <div class="evidence">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Detail Modal -->
+  <div id="detailModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;overflow:auto">
+    <div style="max-width:900px;margin:40px auto;background:var(--surface);border-radius:var(--radius-xl);padding:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 id="detailTitle" style="margin:0">学生详情</h3>
+        <button class="btn small secondary" onclick="closeDetail()">关闭</button>
+      </div>
+      <div id="detailBody">
+        <div class="evidence">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/static/teacher/teacher-api.js"></script>
+<script>
+  let currentCompletion = [];
+  let currentResults = [];
+  let currentQItems = [];
+
+  async function loadSessions() {
+    try {
+      const resp = await fetchJSON("/api/teacher/sessions");
+      const sel = document.getElementById("sessionSelect");
+      sel.innerHTML = "<option value=''>-- 选择课次 --</option>";
+      for (const s of (resp.sessions||[])) {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = "课次 " + (s.session_no||s.id) + (s.title ? " - " + s.title : "") + " (" + (s.status||"") + ")";
+        sel.appendChild(opt);
+      }
+    } catch (e) {
+      setStatus("加载课次失败: " + e.message);
+    }
+  }
+
+  async function onSessionChange() {
+    const sessionId = document.getElementById("sessionSelect").value;
+    const qSel = document.getElementById("questionnaireSelect");
+    qSel.innerHTML = "<option value=''>-- 选择问卷 --</option>";
+    if (!sessionId) return;
+    // Load completion stats to populate questionnaires
+    try {
+      const resp = await fetchJSON("/api/teacher/questionnaire-completion?session_id=" + sessionId);
+      currentCompletion = resp.completion || [];
+      const qSet = new Set();
+      for (const c of currentCompletion) {
+        qSet.add(c.questionnaire_id);
+      }
+      for (const qid of qSet) {
+        const item = currentCompletion.find(c => c.questionnaire_id === qid);
+        const opt = document.createElement("option");
+        opt.value = qid;
+        opt.textContent = (item.questionnaire_title || "Q#" + qid);
+        qSel.appendChild(opt);
+      }
+      renderCompletion(currentCompletion);
+    } catch (e) {
+      setStatus("加载问卷失败: " + e.message);
+    }
+  }
+
+  async function onQuestionnaireChange() {
+    // Auto-load when both session and questionnaire are selected
+    if (document.getElementById("sessionSelect").value && document.getElementById("questionnaireSelect").value) {
+      loadAll();
+    }
+  }
+
+  async function loadAll() {
+    const sessionId = document.getElementById("sessionSelect").value;
+    const questionnaireId = document.getElementById("questionnaireSelect").value;
+    const stage = document.getElementById("stageSelect").value;
+
+    if (!sessionId || !questionnaireId) {
+      setStatus("请选择课次和问卷");
+      return;
+    }
+
+    setStatus("加载中...");
+    document.getElementById("resultsSection").style.display = "none";
+
+    try {
+      // Load results
+      const resp = await fetchJSON("/api/teacher/questionnaire-results?session_id=" + sessionId + "&questionnaire_id=" + questionnaireId + "&stage=" + stage);
+      currentResults = resp.results || [];
+      document.getElementById("resultCount").textContent = currentResults.length + " 名学生";
+      renderResults(currentResults, stage);
+
+      // Also load questionnaire items for detail view
+      try {
+        const qResp = await fetchJSON("/api/teacher/questionnaires/" + questionnaireId);
+        currentQItems = (qResp.questionnaire && qResp.questionnaire.items) || [];
+      } catch (e) {
+        currentQItems = [];
+      }
+
+      document.getElementById("resultsSection").style.display = "block";
+      setStatus("加载完成");
+    } catch (e) {
+      setStatus("加载失败: " + e.message);
+    }
+  }
+
+  function renderCompletion(completion) {
+    const container = document.getElementById("completionTable");
+    if (!completion || completion.length === 0) {
+      container.innerHTML = '<div class="evidence">暂无发布到该课次的问卷。</div>';
+      document.getElementById("completionSection").style.display = "block";
+      return;
+    }
+    let html = '<table style="width:100%;border-collapse:collapse;font-size:13px">';
+    html += '<tr style="border-bottom:2px solid var(--border);text-align:left">' +
+      '<th style="padding:8px 10px">问卷名称</th>' +
+      '<th style="padding:8px 10px">阶段</th>' +
+      '<th style="padding:8px 10px">应完成人数</th>' +
+      '<th style="padding:8px 10px">已完成</th>' +
+      '<th style="padding:8px 10px">未完成</th>' +
+      '<th style="padding:8px 10px">完成率</th></tr>';
+    for (const c of completion) {
+      const stageText = c.stage === "pre" ? "前测" : "后测";
+      const rate = c.completion_rate ? (c.completion_rate * 100).toFixed(1) + "%" : "0%";
+      html += '<tr style="border-bottom:1px solid var(--border-light)">' +
+        '<td style="padding:8px 10px">' + escapeHtml(c.questionnaire_title) + '</td>' +
+        '<td style="padding:8px 10px">' + stageText + '</td>' +
+        '<td style="padding:8px 10px">' + c.total_students + '</td>' +
+        '<td style="padding:8px 10px" style="color:var(--success-text)"><strong>' + c.completed_count + '</strong></td>' +
+        '<td style="padding:8px 10px" style="color:' + (c.incomplete_count > 0 ? 'var(--danger-text)' : '') + '">' + c.incomplete_count + '</td>' +
+        '<td style="padding:8px 10px">' + rate + '</td></tr>';
+    }
+    html += '</table>';
+    container.innerHTML = html;
+    document.getElementById("completionSection").style.display = "block";
+  }
+
+  function renderResults(results, stage) {
+    const container = document.getElementById("resultsTable");
+    if (!results || results.length === 0) {
+      container.innerHTML = '<div class="evidence">暂无结果数据。</div>';
+      return;
+    }
+    let html = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+    html += '<tr style="border-bottom:2px solid var(--border);text-align:left">' +
+      '<th style="padding:6px 8px">参与编号</th>' +
+      '<th style="padding:6px 8px">姓名</th>' +
+      '<th style="padding:6px 8px">组号</th>' +
+      '<th style="padding:6px 8px">成员号</th>' +
+      '<th style="padding:6px 8px">小组</th>' +
+      '<th style="padding:6px 8px">状态</th>' +
+      '<th style="padding:6px 8px">维度分</th>' +
+      '<th style="padding:6px 8px">总分/均分</th>' +
+      '<th style="padding:6px 8px">操作</th></tr>';
+    for (const r of results) {
+      const completed = r.completed;
+      const statusClass = completed ? "" : "style='color:var(--text-muted)'";
+      // Dimension scores
+      let dimHtml = "";
+      const dims = r.dimension_scores || {};
+      const dimKeys = Object.keys(dims);
+      if (dimKeys.length > 0) {
+        dimHtml = dimKeys.map(k => {
+          const d = dims[k];
+          return escapeHtml(k) + ": " + d.mean + "(" + d.sum + "/" + d.count + ")";
+        }).join("<br>");
+      } else {
+        dimHtml = completed ? "无维度" : "未完成";
+      }
+      // Total score
+      let totalHtml = "";
+      if (completed && r.total_score) {
+        const ts = r.total_score;
+        totalHtml = (ts.mean || ts.mean === 0) ? "均分: " + ts.mean.toFixed(2) + "<br>总分: " + ts.sum : "";
+      } else {
+        totalHtml = "未完成";
+      }
+      html += '<tr style="border-bottom:1px solid var(--border-light)" ' + statusClass + '>' +
+        '<td style="padding:6px 8px">' + escapeHtml(r.participant_code || "") + '</td>' +
+        '<td style="padding:6px 8px">' + escapeHtml(r.display_name || "") + '</td>' +
+        '<td style="padding:6px 8px">' + (r.group_no || "") + '</td>' +
+        '<td style="padding:6px 8px">' + (r.member_no || "") + '</td>' +
+        '<td style="padding:6px 8px">' + escapeHtml(r.group_code || "") + '</td>' +
+        '<td style="padding:6px 8px">' + (completed ? '<span class="badge">已完成</span>' : '<span class="badge" style="background:var(--danger-soft);color:var(--danger-text);border-color:var(--danger-border)">未完成</span>') + '</td>' +
+        '<td style="padding:6px 8px;font-size:11px">' + dimHtml + '</td>' +
+        '<td style="padding:6px 8px;font-size:11px">' + totalHtml + '</td>' +
+        '<td style="padding:6px 8px">' +
+        (completed ? '<button class="btn small secondary" onclick="showDetail(' + r.user_id + ')">详情</button>' : '-') +
+        '</td></tr>';
+    }
+    html += '</table>';
+    container.innerHTML = html;
+  }
+
+  async function showDetail(userId) {
+    const sessionId = document.getElementById("sessionSelect").value;
+    const questionnaireId = document.getElementById("questionnaireSelect").value;
+    const stage = document.getElementById("stageSelect").value;
+
+    document.getElementById("detailModal").style.display = "block";
+    document.getElementById("detailTitle").textContent = "学生答卷详情";
+
+    try {
+      // Get the result data for this user
+      const resp = await fetchJSON("/api/teacher/questionnaire-results?session_id=" + sessionId + "&questionnaire_id=" + questionnaireId + "&stage=" + stage);
+      const results = resp.results || [];
+      const userResult = results.find(r => r.user_id === userId);
+      if (!userResult || !userResult.completed) {
+        document.getElementById("detailBody").innerHTML = '<div class="evidence">该学生未完成此问卷。</div>';
+        return;
+      }
+
+      const itemScores = userResult.item_scores || [];
+      const dimScores = userResult.dimension_scores || {};
+      const totalScore = userResult.total_score || {};
+
+      let html = '<div style="margin-bottom:12px">';
+      html += '<p><strong>参与编号:</strong> ' + escapeHtml(userResult.participant_code || "") + '</p>';
+      html += '<p><strong>姓名:</strong> ' + escapeHtml(userResult.display_name || "") + '</p>';
+      html += '<p><strong>提交时间:</strong> ' + escapeHtml(userResult.completed_at || "") + '</p>';
+      html += '</div>';
+
+      // Dimension scores summary
+      html += '<h4 style="margin:12px 0 6px">维度分</h4>';
+      html += '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">';
+      html += '<tr style="border-bottom:1px solid var(--border)"><th style="padding:4px 8px;text-align:left">维度</th><th style="padding:4px 8px;text-align:right">均分</th><th style="padding:4px 8px;text-align:right">总分</th><th style="padding:4px 8px;text-align:right">题数</th></tr>';
+      for (const [key, val] of Object.entries(dimScores)) {
+        html += '<tr style="border-bottom:1px solid var(--border-light)">' +
+          '<td style="padding:4px 8px">' + escapeHtml(key) + '</td>' +
+          '<td style="padding:4px 8px;text-align:right">' + val.mean.toFixed(2) + '</td>' +
+          '<td style="padding:4px 8px;text-align:right">' + val.sum + '</td>' +
+          '<td style="padding:4px 8px;text-align:right">' + val.count + '</td></tr>';
+      }
+      html += '<tr style="border-top:2px solid var(--border)"><td style="padding:4px 8px"><strong>总分</strong></td>' +
+        '<td style="padding:4px 8px;text-align:right"><strong>' + (totalScore.mean || 0).toFixed(2) + '</strong></td>' +
+        '<td style="padding:4px 8px;text-align:right"><strong>' + (totalScore.sum || 0) + '</strong></td>' +
+        '<td style="padding:4px 8px;text-align:right"><strong>' + (totalScore.count || 0) + '</strong></td></tr>';
+      html += '</table>';
+
+      // Item scores detail
+      html += '<h4 style="margin:12px 0 6px">题项明细</h4>';
+      html += '<table style="width:100%;border-collapse:collapse;font-size:11px">';
+      html += '<tr style="border-bottom:1px solid var(--border)">' +
+        '<th style="padding:4px 6px;text-align:left">题号</th>' +
+        '<th style="padding:4px 6px;text-align:left">题目</th>' +
+        '<th style="padding:4px 6px;text-align:center">原始值</th>' +
+        '<th style="padding:4px 6px;text-align:center">计分</th>' +
+        '<th style="padding:4px 6px;text-align:center">反向</th>' +
+        '<th style="padding:4px 6px;text-align:center">维度</th></tr>';
+      for (const s of itemScores) {
+        if (s.skipped) continue;
+        const reverseText = s.reverse_scored ? "是" : "否";
+        const rawVal = s.raw_value !== null && s.raw_value !== undefined ? s.raw_value : "-";
+        const scoredVal = s.scored_value !== null && s.scored_value !== undefined ? s.scored_value : (s.missing ? "缺失" : "不可计分");
+        const missingStyle = s.missing ? "style='color:var(--danger-text)'" : "";
+        html += '<tr style="border-bottom:1px solid var(--border-light)" ' + missingStyle + '>' +
+          '<td style="padding:4px 6px">' + escapeHtml(s.item_code || "") + '</td>' +
+          '<td style="padding:4px 6px;max-width:300px;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(s.item_code || "") + '</td>' +
+          '<td style="padding:4px 6px;text-align:center">' + rawVal + '</td>' +
+          '<td style="padding:4px 6px;text-align:center"><strong>' + scoredVal + '</strong></td>' +
+          '<td style="padding:4px 6px;text-align:center">' + reverseText + '</td>' +
+          '<td style="padding:4px 6px;text-align:center">' + escapeHtml(s.dimension_label || s.dimension_key || "") + '</td></tr>';
+      }
+      html += '</table>';
+
+      document.getElementById("detailBody").innerHTML = html;
+    } catch (e) {
+      document.getElementById("detailBody").innerHTML = '<div class="evidence" style="color:var(--danger-text)">加载详情失败: ' + escapeHtml(e.message || "未知错误") + '</div>';
+    }
+  }
+
+  function closeDetail() {
+    document.getElementById("detailModal").style.display = "none";
+  }
+
+  function setStatus(msg) {
+    document.getElementById("statusMessage").textContent = msg;
+  }
+
+  // Load sessions on page init
+  loadSessions();
+</script>

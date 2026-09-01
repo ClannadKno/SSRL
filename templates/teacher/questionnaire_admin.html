@@ -1,0 +1,308 @@
+{# SSRL-ESP Teacher Questionnaire Admin Page #}
+
+<div class="container">
+  <div class="nav" style="margin-bottom:20px">
+    <div class="nav-title">问卷管理</div>
+    <div class="nav-user">
+      <a class="btn small secondary" href="/teacher">返回仪表盘</a>
+      <a class="btn small secondary" href="/logout">退出</a>
+    </div>
+  </div>
+
+  <div style="display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
+    <div class="card">
+      <div class="card-hd">
+        <h2 id="questionnaireFormTitle">新建问卷</h2>
+        <button class="btn small secondary" onclick="resetQuestionnaireForm()">清空</button>
+      </div>
+      <div class="card-bd" style="display:grid;gap:10px">
+        <select id="questionnaireCategory">
+          <option value="ssrl">SSRL</option>
+          <option value="collaboration_emotion">协作情绪</option>
+          <option value="psychological_safety">心理安全感</option>
+          <option value="tam">TAM</option>
+          <option value="cognitive_load">认知负荷</option>
+          <option value="agent_intrusion">智能体干扰感</option>
+        </select>
+        <input id="questionnaireTitle" placeholder="问卷标题">
+        <textarea id="questionnaireDescription" placeholder="问卷说明" style="min-height:60px"></textarea>
+        <div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+          <select id="questionnaireTiming">
+            <option value="pre">仅前测</option><option value="post">仅后测</option><option value="both" selected>前后测</option>
+          </select>
+          <select id="questionnaireScaleMax">
+            <option value="5" selected>李克特 1-5</option><option value="7">李克特 1-7</option>
+          </select>
+          <input id="questionnaireSortOrder" type="number" min="0" step="1" value="0" placeholder="排序">
+        </div>
+        <textarea id="questionnaireItems" placeholder="每行一个题项；可写成 维度|题项内容" style="min-height:140px"></textarea>
+        <label class="radio-line"><input id="questionnaireActive" type="checkbox"> 启用</label>
+        <div style="display:flex;gap:10px">
+          <button class="btn small" onclick="createQuestionnaire()">创建</button>
+          <button class="btn small secondary" onclick="saveQuestionnaireEdit()">保存修改</button>
+        </div>
+        <div id="questionnaireAdminStatus" class="muted" style="font-size:12px"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd">
+        <h2>问卷列表</h2>
+        <div id="questionnaireListSummary" class="muted" style="font-size:12px">0 份</div>
+      </div>
+      <div style="padding:10px 16px;display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--border-light)">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+          <input type="checkbox" id="questionnaireSelectAll" onchange="document.querySelectorAll('.q-select').forEach(cb=>cb.checked=this.checked)"> 全选
+        </label>
+        <button class="btn small secondary" onclick="batchToggleQuestionnaireActive(true)">批量启用</button>
+        <button class="btn small secondary" onclick="batchToggleQuestionnaireActive(false)">批量停用</button>
+      </div>
+      <div id="questionnaireCards" class="card-bd" style="display:grid;gap:10px"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="card-hd">
+      <h2>问卷包管理</h2>
+      <div id="questionnaireSetListSummary" class="muted" style="font-size:12px">0 个问卷包</div>
+    </div>
+    <div class="card-bd" style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+      <div style="display:grid;gap:10px">
+        <div class="card-hd" style="padding:0;border:0">
+          <h3 id="questionnaireSetFormTitle" style="margin:0;font-size:16px">新建问卷包</h3>
+          <button class="btn small secondary" onclick="resetQuestionnaireSetForm()">清空</button>
+        </div>
+        <input id="questionnaireSetName" placeholder="问卷包名称">
+        <textarea id="questionnaireSetDescription" placeholder="问卷包说明" style="min-height:54px"></textarea>
+        <label class="radio-line"><input id="questionnaireSetActive" type="checkbox" checked> 可用于课次绑定</label>
+        <div>
+          <div class="muted" style="font-size:12px;margin-bottom:6px">选择问卷并设置顺序</div>
+          <div id="qsetQuestionnaireChoices" style="display:grid;gap:8px"></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn small" onclick="createQuestionnaireSet()">创建问卷包</button>
+          <button class="btn small secondary" onclick="saveQuestionnaireSetEdit()">保存修改</button>
+        </div>
+        <div id="questionnaireSetStatus" class="muted" style="font-size:12px"></div>
+      </div>
+      <div id="questionnaireSetCards" style="display:grid;gap:10px"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/teacher/teacher-api.js"></script>
+<script>
+  let selQid = null;
+  let qPayload = null;
+  let selQSetId = null;
+  let qSetPayload = null;
+
+  function timingText(timing) {
+    return timing==='both' ? '\u524d\u540e\u6d4b' : (timing==='pre' ? '\u4ec5\u524d\u6d4b' : '\u4ec5\u540e\u6d4b');
+  }
+  function splitQItems(value) {
+    return (value||'').split(/\n/).map(s=>s.trim()).filter(Boolean).map((line, i) => {
+      const parts = line.split('|');
+      if (parts.length > 1) return { dimension_label: parts[0].trim(), prompt_text: parts.slice(1).join('|').trim(), item_code: 'Q'+String(i+1).padStart(2,'0') };
+      return { dimension_label: '', prompt_text: line, item_code: 'Q'+String(i+1).padStart(2,'0') };
+    });
+  }
+  function fillQForm(q) {
+    selQid = q ? q.id : null;
+    document.getElementById('questionnaireFormTitle').textContent = q ? ('\u7f16\u8f91\u95ee\u5377 #'+q.id) : '\u65b0\u5efa\u95ee\u5377';
+    document.getElementById('questionnaireCategory').value = q ? (q.category_key||'ssrl') : 'ssrl';
+    document.getElementById('questionnaireTitle').value = q ? (q.title||'') : '';
+    document.getElementById('questionnaireDescription').value = q ? (q.description||'') : '';
+    document.getElementById('questionnaireTiming').value = q ? (q.timing||'both') : 'both';
+    document.getElementById('questionnaireScaleMax').value = q ? String(q.scale_max||5) : '5';
+    document.getElementById('questionnaireSortOrder').value = q ? (q.sort_order||0) : 0;
+    document.getElementById('questionnaireActive').checked = !!(q && q.active);
+    document.getElementById('questionnaireItems').value = q ? (q.items||[]).map(it => (it.dimension_label ? it.dimension_label+'|'+it.prompt_text : it.prompt_text)).join('\n') : '';
+  }
+  function resetQuestionnaireForm() { fillQForm(null); }
+  function collectQPayload() {
+    return {
+      category_key: document.getElementById('questionnaireCategory').value,
+      title: document.getElementById('questionnaireTitle').value.trim(),
+      description: document.getElementById('questionnaireDescription').value.trim(),
+      timing: document.getElementById('questionnaireTiming').value,
+      scale_max: parseInt(document.getElementById('questionnaireScaleMax').value||'5',10),
+      sort_order: parseInt(document.getElementById('questionnaireSortOrder').value||'0',10),
+      active: document.getElementById('questionnaireActive').checked,
+      items: splitQItems(document.getElementById('questionnaireItems').value),
+    };
+  }
+  function renderQCards(data) {
+    qPayload = data;
+    const list = data.questionnaires||[];
+    document.getElementById('questionnaireListSummary').textContent = list.length + ' \u4efd';
+    document.getElementById('questionnaireCards').innerHTML = list.length ? list.map(q => {
+      const summary = q.response_summary||{};
+      const stageText = timingText(q.timing);
+      const itemCount = (q.items||[]).length;
+      return '<div class="group-card"><div class="group-card-head"><div style="display:flex;align-items:center;gap:10px">' +
+        '<input type="checkbox" class="q-select" value="'+q.id+'" style="width:18px;height:18px;cursor:pointer">' +
+        '<div><div class="group-title">'+window.escapeHtml(q.title||'')+'</div>' +
+        '<div class="muted" style="font-size:12px">'+window.escapeHtml(q.category_key||'')+'|'+stageText+'|1-'+(q.scale_max||5)+'</div></div></div>' +
+        '<span class="badge">'+(q.active?'\u5df2\u542f\u7528':'\u672a\u542f\u7528')+'</span></div>' +
+        '<div class="evidence">'+window.escapeHtml(q.description||'')+'</div>' +
+        '<div class="muted" style="font-size:12px">'+(summary.response_count||0)+' \u6761\u539f\u59cb\u5206\u503c\u8bb0\u5f55 | '+(summary.participant_count||0)+' \u4eba</div>' +
+        '<div class="teacher-actions">' +
+        '<button class="btn small secondary" onclick="fillQForm(qPayload.questionnaires.find(x=>x.id==='+q.id+'))">\u7f16\u8f91</button>' +
+        '<button class="btn small" onclick="toggleQActive('+q.id+','+(q.active?'false':'true')+')">'+(q.active?'\u505c\u7528':'\u542f\u7528')+'</button>' +
+        '<button class="btn small secondary" onclick="deleteQ('+q.id+')">\u5220\u9664</button>' +
+        '</div></div>';
+    }).join('') : '<div class="evidence">\u6682\u65e0\u95ee\u5377\u3002</div>';
+    renderQuestionnaireSetChoices();
+  }
+  async function loadQAdmin() {
+    const data = await window.fetchJSON('/api/teacher/questionnaires');
+    renderQCards(data);
+  }
+  async function createQuestionnaire() {
+    const data = await window.fetchJSON('/api/teacher/questionnaires', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(collectQPayload())
+    });
+    document.getElementById('questionnaireAdminStatus').textContent = '\u95ee\u5377\u5df2\u521b\u5efa';
+    renderQCards(data);
+  }
+  async function saveQuestionnaireEdit() {
+    if (!selQid) { alert('\u8bf7\u5148\u4ece\u53f3\u4fa7\u52a0\u8f7d\u95ee\u5377'); return; }
+    const data = await window.fetchJSON('/api/teacher/questionnaires/'+selQid, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(collectQPayload())
+    });
+    document.getElementById('questionnaireAdminStatus').textContent = '\u95ee\u5377\u5df2\u66f4\u65b0';
+    renderQCards(data);
+  }
+  async function toggleQActive(id, active) {
+    const data = await window.fetchJSON('/api/teacher/questionnaires/'+id+'/active', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({active})
+    });
+    document.getElementById('questionnaireAdminStatus').textContent = active ? '\u95ee\u5377\u5df2\u542f\u7528' : '\u95ee\u5377\u5df2\u505c\u7528';
+    renderQCards(data);
+  }
+  async function deleteQ(id) {
+    if (!confirm('\u786e\u8ba4\u5220\u9664?')) return;
+    const data = await window.fetchJSON('/api/teacher/questionnaires/'+id, {method:'DELETE'});
+    renderQCards(data);
+  }
+  async function batchToggleQuestionnaireActive(active) {
+    const ids = Array.from(document.querySelectorAll('.q-select:checked')).map(cb=>cb.value);
+    if (!ids.length) { alert('\u8bf7\u5148\u52fe\u9009'); return; }
+    await window.fetchJSON('/api/teacher/questionnaires/batch-active', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({questionnaire_ids: ids, active})
+    });
+    await loadQAdmin();
+  }
+  function renderQuestionnaireSetChoices(selectedItems) {
+    const choices = document.getElementById('qsetQuestionnaireChoices');
+    if (!choices) return;
+    const selected = {};
+    (selectedItems||[]).forEach((item, index) => {
+      selected[item.questionnaire_id] = item.sort_order == null ? index + 1 : item.sort_order;
+    });
+    const list = ((qPayload && qPayload.questionnaires) || []).filter(q => q.active);
+    choices.innerHTML = list.length ? list.map((q, index) => {
+      const checked = Object.prototype.hasOwnProperty.call(selected, q.id);
+      const order = checked ? selected[q.id] : index + 1;
+      return '<label class="evidence" style="display:grid;grid-template-columns:20px 1fr 70px;gap:8px;align-items:center">' +
+        '<input type="checkbox" class="qset-q-check" value="'+q.id+'" '+(checked?'checked':'')+'>' +
+        '<span><strong>'+window.escapeHtml(q.title||'')+'</strong><br><span class="muted" style="font-size:12px">'+timingText(q.timing)+' | '+window.escapeHtml(q.category_key||'')+'</span></span>' +
+        '<input class="qset-q-order" data-qid="'+q.id+'" type="number" min="1" step="1" value="'+order+'" title="排序">' +
+        '</label>';
+    }).join('') : '<div class="evidence">\u8bf7\u5148\u521b\u5efa\u5e76\u542f\u7528\u95ee\u5377\u3002</div>';
+  }
+  function collectQuestionnaireSetItems() {
+    return Array.from(document.querySelectorAll('.qset-q-check:checked')).map((cb, index) => {
+      const orderInput = document.querySelector('.qset-q-order[data-qid="'+cb.value+'"]');
+      return {
+        questionnaire_id: parseInt(cb.value, 10),
+        sort_order: parseInt((orderInput && orderInput.value) || String(index + 1), 10)
+      };
+    }).sort((a, b) => a.sort_order - b.sort_order || a.questionnaire_id - b.questionnaire_id);
+  }
+  function collectQuestionnaireSetPayload() {
+    const nameInput = document.getElementById('questionnaireSetName');
+    const payload = {
+      name: nameInput.value.trim(),
+      description: document.getElementById('questionnaireSetDescription').value.trim(),
+      active: document.getElementById('questionnaireSetActive').checked,
+      items: collectQuestionnaireSetItems()
+    };
+    if (!payload.name) {
+      document.getElementById('questionnaireSetStatus').textContent = '\u8bf7\u5148\u586b\u5199\u95ee\u5377\u5305\u540d\u79f0';
+      nameInput.focus();
+      throw new Error('Questionnaire set name is required');
+    }
+    return payload;
+  }
+  function fillQuestionnaireSetForm(qset) {
+    selQSetId = qset ? qset.id : null;
+    document.getElementById('questionnaireSetFormTitle').textContent = qset ? ('\u7f16\u8f91\u95ee\u5377\u5305 #'+qset.id) : '\u65b0\u5efa\u95ee\u5377\u5305';
+    document.getElementById('questionnaireSetName').value = qset ? (qset.name||'') : '';
+    document.getElementById('questionnaireSetDescription').value = qset ? (qset.description||'') : '';
+    document.getElementById('questionnaireSetActive').checked = qset ? !!qset.active : true;
+    renderQuestionnaireSetChoices(qset ? (qset.items||[]) : []);
+  }
+  function resetQuestionnaireSetForm() { fillQuestionnaireSetForm(null); }
+  function renderQuestionnaireSetCards(data) {
+    qSetPayload = data;
+    const list = data.questionnaire_sets || [];
+    document.getElementById('questionnaireSetListSummary').textContent = list.length + ' \u4e2a\u95ee\u5377\u5305';
+    document.getElementById('questionnaireSetCards').innerHTML = list.length ? list.map(qset => {
+      const items = qset.items || [];
+      const itemHtml = items.length ? items.map(item => {
+        return '<div class="muted" style="font-size:12px">'+window.escapeHtml(item.questionnaire_title||('#'+item.questionnaire_id))+' | '+timingText(item.questionnaire_timing)+'</div>';
+      }).join('') : '<div class="muted" style="font-size:12px">\u672a\u9009\u62e9\u95ee\u5377</div>';
+      return '<div class="group-card"><div class="group-card-head"><div><div class="group-title">'+window.escapeHtml(qset.name||'')+'</div>' +
+        '<div class="muted" style="font-size:12px">'+items.length+' \u4efd\u95ee\u5377</div></div>' +
+        '<span class="badge">'+(qset.active?'\u53ef\u7528':'\u5df2\u505c\u7528')+'</span></div>' +
+        '<div class="evidence">'+window.escapeHtml(qset.description||'')+'</div>' +
+        '<div style="display:grid;gap:4px">'+itemHtml+'</div>' +
+        '<div class="teacher-actions">' +
+        '<button class="btn small secondary" onclick="fillQuestionnaireSetForm(qSetPayload.questionnaire_sets.find(x=>x.id==='+qset.id+'))">\u7f16\u8f91</button>' +
+        '<button class="btn small secondary" onclick="deleteQuestionnaireSet('+qset.id+')">\u5220\u9664/\u505c\u7528</button>' +
+        '</div></div>';
+    }).join('') : '<div class="evidence">\u6682\u65e0\u95ee\u5377\u5305\u3002</div>';
+  }
+  async function loadQuestionnaireSets() {
+    const data = await window.fetchJSON('/api/teacher/questionnaire-sets?include_inactive=1');
+    renderQuestionnaireSetCards(data);
+  }
+  async function createQuestionnaireSet() {
+    try {
+      const data = await window.fetchJSON('/api/teacher/questionnaire-sets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(collectQuestionnaireSetPayload())
+      });
+      document.getElementById('questionnaireSetStatus').textContent = '\u95ee\u5377\u5305\u5df2\u521b\u5efa';
+      renderQuestionnaireSetCards(data);
+    } catch (e) {
+      document.getElementById('questionnaireSetStatus').textContent = e.message || '\u95ee\u5377\u5305\u521b\u5efa\u5931\u8d25';
+    }
+  }
+  async function saveQuestionnaireSetEdit() {
+    if (!selQSetId) { alert('\u8bf7\u5148\u4ece\u53f3\u4fa7\u52a0\u8f7d\u95ee\u5377\u5305'); return; }
+    try {
+      const data = await window.fetchJSON('/api/teacher/questionnaire-sets/'+selQSetId, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(collectQuestionnaireSetPayload())
+      });
+      document.getElementById('questionnaireSetStatus').textContent = '\u95ee\u5377\u5305\u5df2\u66f4\u65b0';
+      renderQuestionnaireSetCards(data);
+    } catch (e) {
+      document.getElementById('questionnaireSetStatus').textContent = e.message || '\u95ee\u5377\u5305\u4fdd\u5b58\u5931\u8d25';
+    }
+  }
+  async function deleteQuestionnaireSet(id) {
+    if (!confirm('\u5220\u9664\u672a\u4f7f\u7528\u95ee\u5377\u5305\uff1b\u5df2\u4f7f\u7528\u95ee\u5377\u5305\u5c06\u505c\u7528\u3002\u7ee7\u7eed?')) return;
+    const data = await window.fetchJSON('/api/teacher/questionnaire-sets/'+id, {method:'DELETE'});
+    document.getElementById('questionnaireSetStatus').textContent = data.result && data.result.deactivated ? '\u95ee\u5377\u5305\u5df2\u505c\u7528' : '\u95ee\u5377\u5305\u5df2\u5220\u9664';
+    renderQuestionnaireSetCards(data);
+  }
+  loadQAdmin();
+  loadQuestionnaireSets();
+</script>

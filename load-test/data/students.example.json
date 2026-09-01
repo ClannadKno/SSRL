@@ -1,0 +1,16 @@
+{
+  "students": [
+    {
+      "id": "student_001",
+      "loginKey": "REPLACE_WITH_TEST_LOGIN_KEY_001"
+    },
+    {
+      "id": "student_002",
+      "loginKey": "REPLACE_WITH_TEST_LOGIN_KEY_002"
+    },
+    {
+      "id": "student_003",
+      "loginKey": "REPLACE_WITH_TEST_LOGIN_KEY_003"
+    }
+  ]
+}

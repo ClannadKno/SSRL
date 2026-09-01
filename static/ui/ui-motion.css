@@ -1,0 +1,82 @@
+/* Motion is opt-in through the shared UI classes. */
+.ui-glass-card,
+.ui-solid-card,
+.ui-panel,
+.ui-button,
+.ui-input,
+.ui-select,
+.ui-badge,
+.ui-status-badge {
+  transition:
+    border-color var(--ui-motion-fast) var(--ui-ease-standard),
+    background-color var(--ui-motion-fast) var(--ui-ease-standard),
+    box-shadow var(--ui-motion-base) var(--ui-ease-standard),
+    color var(--ui-motion-fast) var(--ui-ease-standard),
+    transform var(--ui-motion-base) var(--ui-ease-standard);
+}
+
+@media (hover: hover) {
+  .ui-glass-card:hover,
+  .ui-solid-card:hover {
+    border-color: var(--ui-border-strong);
+    box-shadow: var(--ui-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .ui-button:hover {
+    box-shadow: var(--ui-shadow-hover);
+    transform: translateY(-1px);
+  }
+}
+
+.ui-button:active {
+  box-shadow: var(--ui-shadow-control);
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  .ui-glass-card,
+  .ui-solid-card,
+  .ui-panel,
+  .ui-button,
+  .ui-input,
+  .ui-select,
+  .ui-badge,
+  .ui-status-badge {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+  }
+
+  .btn,
+  .module-card,
+  .phase-step,
+  .msg-item,
+  .login-card,
+  .login-card .btn {
+    transition-duration: 0.01ms !important;
+  }
+
+  .ui-glass-card:hover,
+  .ui-solid-card:hover,
+  .ui-button:hover,
+  .ui-button:active {
+    transform: none;
+  }
+
+  .btn:hover,
+  .module-card:hover,
+  .login-card .btn:hover {
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

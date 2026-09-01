@@ -1,0 +1,117 @@
+{
+  "version": "strategy_route_manifest.v1",
+  "routes": {
+    "standard": {
+      "route_mode": "OPTIONAL_SUPPORT",
+      "intervention_mode": "optional_support",
+      "primary_strategy_ids": ["SS-001"],
+      "backup_strategy_ids": ["EA-006"],
+      "inhibition_strategy_id": null
+    },
+    "deep_thinking": {
+      "route_mode": "SUPPRESS",
+      "intervention_mode": "observation_inhibition",
+      "primary_strategy_ids": ["OI-002"],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": "OI-002"
+    },
+    "execution_progress": {
+      "route_mode": "SUPPRESS",
+      "intervention_mode": "observation_inhibition",
+      "primary_strategy_ids": ["OI-004"],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": "OI-004"
+    },
+    "constructive_conflict": {
+      "route_mode": "SUPPRESS",
+      "intervention_mode": "observation_inhibition",
+      "primary_strategy_ids": ["OI-001"],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": "OI-001"
+    },
+    "interpersonal_conflict": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention",
+      "primary_strategy_ids": ["ER-001"],
+      "backup_strategy_ids": ["EE-001", "SS-004", "ER-007"],
+      "inhibition_strategy_id": null
+    },
+    "confusion": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention",
+      "primary_strategy_ids": ["EA-001"],
+      "backup_strategy_ids": ["ER-005", "EE-006", "SS-003"],
+      "inhibition_strategy_id": null
+    },
+    "frustration": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention",
+      "primary_strategy_ids": ["ER-002"],
+      "backup_strategy_ids": ["EE-003", "SS-006", "EA-007"],
+      "inhibition_strategy_id": null
+    },
+    "burnout": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention",
+      "primary_strategy_ids": ["ER-008"],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": null
+    },
+    "off_topic_self_regulated": {
+      "route_mode": "SUPPRESS",
+      "intervention_mode": "observation_inhibition",
+      "primary_strategy_ids": ["OI-003"],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": "OI-003"
+    },
+    "off_topic_unregulated": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention",
+      "primary_strategy_ids": ["ER-003"],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": null
+    },
+    "perfunctory_detachment": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention",
+      "primary_strategy_ids": ["ER-006"],
+      "backup_strategy_ids": ["SS-005"],
+      "inhibition_strategy_id": null
+    },
+    "individual_marginalization": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention",
+      "primary_strategy_ids": ["EA-003"],
+      "backup_strategy_ids": ["EE-005", "SS-002"],
+      "inhibition_strategy_id": null
+    },
+    "psychological_safety_risk": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention_overlay",
+      "primary_strategy_ids": ["SS-004"],
+      "backup_strategy_ids": ["EE-001"],
+      "inhibition_strategy_id": null
+    },
+    "high_intensity_overload": {
+      "route_mode": "REQUIRED_INTERVENTION",
+      "intervention_mode": "risk_intervention_overlay",
+      "primary_strategy_ids": ["EA-005"],
+      "backup_strategy_ids": ["ER-004"],
+      "inhibition_strategy_id": null
+    },
+    "stage_achievement": {
+      "route_mode": "OPTIONAL_SUPPORT",
+      "intervention_mode": "optional_support_overlay",
+      "primary_strategy_ids": ["SS-007"],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": null
+    },
+    "unknown_sub_state": {
+      "route_mode": "SUPPRESS",
+      "intervention_mode": "record_only",
+      "primary_strategy_ids": [],
+      "backup_strategy_ids": [],
+      "inhibition_strategy_id": null
+    }
+  }
+}

@@ -1,0 +1,291 @@
+/*
+ * Batch 8 teacher operations workspace.
+ * Scoped to the three operational teacher pages so analytics, questionnaire,
+ * student, and editor surfaces keep their existing batch-specific styling.
+ */
+.teacher-operations-page {
+  display: grid;
+  gap: var(--ui-space-24);
+  max-width: min(1280px, calc(100vw - 32px));
+}
+
+.teacher-operations-page .ops-page-header {
+  display: grid;
+  gap: var(--ui-space-8);
+  padding: var(--ui-space-8) 0 0;
+}
+
+.teacher-operations-page .ops-page-header h1 {
+  color: var(--ui-text-strong);
+  font-size: 1.85rem;
+  font-weight: 800;
+}
+
+.teacher-operations-page .ops-page-header p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--ui-text-secondary);
+  font-size: 0.92rem;
+}
+
+.teacher-operations-page .ops-workspace {
+  display: grid;
+  gap: var(--ui-space-20);
+  border-radius: var(--ui-radius-workspace);
+  background: var(--ui-glass-workspace);
+  box-shadow: var(--ui-shadow-workspace);
+  padding: var(--ui-space-24);
+}
+
+.teacher-operations-page .ops-section-grid {
+  display: grid;
+  gap: var(--ui-space-20);
+}
+
+.teacher-operations-page .ops-section-grid-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.teacher-operations-page .ops-section-card,
+.teacher-operations-page .ops-table-card,
+.teacher-operations-page .ops-export-card {
+  border-color: var(--ui-border-soft);
+  border-radius: var(--ui-radius-card);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: var(--ui-shadow-card);
+}
+
+.teacher-operations-page .ops-section-card .card-hd,
+.teacher-operations-page .ops-table-card .card-hd,
+.teacher-operations-page .ops-export-card .card-hd {
+  min-height: 60px;
+  border-bottom-color: rgba(145, 169, 207, 0.18);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(248, 250, 255, 0.42));
+}
+
+.teacher-operations-page .ops-section-card .card-hd h2,
+.teacher-operations-page .ops-table-card .card-hd h2,
+.teacher-operations-page .ops-export-card .card-hd h2 {
+  color: var(--ui-text-strong);
+}
+
+.teacher-operations-page .ops-form-grid {
+  display: grid;
+  gap: var(--ui-space-12);
+}
+
+.teacher-operations-page .ops-form-grid-compact {
+  gap: var(--ui-space-8);
+}
+
+.teacher-operations-page .ops-field,
+.teacher-operations-page .ops-fieldset {
+  display: grid;
+  gap: var(--ui-space-8);
+}
+
+.teacher-operations-page .ops-fieldset {
+  margin-top: var(--ui-space-4);
+  padding-top: var(--ui-space-12);
+  border-top: 1px solid rgba(145, 169, 207, 0.18);
+}
+
+.teacher-operations-page .ops-fieldset-title {
+  color: var(--ui-text-strong);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.teacher-operations-page .ops-inline-controls,
+.teacher-operations-page .ops-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-12);
+  flex-wrap: wrap;
+}
+
+.teacher-operations-page .ops-actions {
+  margin-top: var(--ui-space-8);
+}
+
+.teacher-operations-page .ops-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-8);
+  min-height: 32px;
+  color: var(--ui-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.teacher-operations-page .ops-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ui-brand-700);
+}
+
+.teacher-operations-page .ops-status-card {
+  border-radius: var(--ui-radius-card);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.teacher-operations-page .ops-task-summary {
+  border-top: 1px solid rgba(145, 169, 207, 0.18);
+  padding-top: 0;
+}
+
+.teacher-operations-page .group-card {
+  border-color: rgba(145, 169, 207, 0.20);
+  border-radius: var(--ui-radius-panel);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--ui-shadow-control);
+}
+
+.teacher-operations-page .session-card {
+  transition: border-color var(--ui-motion-fast), box-shadow var(--ui-motion-fast);
+}
+
+.teacher-operations-page .session-card:hover {
+  border-color: var(--ui-border-strong);
+  box-shadow: var(--ui-shadow-card);
+}
+
+.teacher-operations-page .ops-toolbar-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-16);
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-card);
+  background: rgba(255, 255, 255, 0.76);
+  padding: var(--ui-space-16) var(--ui-space-20);
+  box-shadow: var(--ui-shadow-control);
+}
+
+.teacher-operations-page .ops-toolbar-card p {
+  margin: 0;
+  color: var(--ui-text-secondary);
+  font-size: 0.86rem;
+}
+
+.teacher-operations-page .ops-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(145, 169, 207, 0.18);
+  border-radius: var(--ui-radius-panel);
+  background: var(--ui-surface-solid);
+}
+
+.teacher-operations-page .ops-data-table {
+  width: 100%;
+  min-width: 880px;
+  border-collapse: collapse;
+  color: var(--ui-text-primary);
+  font-size: 0.82rem;
+}
+
+.teacher-operations-page .ops-data-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f3f7ff;
+  color: var(--ui-text-strong);
+  font-weight: 800;
+}
+
+.teacher-operations-page .ops-data-table th,
+.teacher-operations-page .ops-data-table td {
+  padding: var(--ui-space-12) var(--ui-space-16);
+  border-bottom: 1px solid rgba(145, 169, 207, 0.16);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.teacher-operations-page .ops-data-table tbody tr:hover td {
+  background: rgba(70, 118, 190, 0.06);
+}
+
+.teacher-operations-page .ops-export-grid {
+  display: grid;
+  gap: var(--ui-space-16);
+  grid-template-columns: minmax(220px, 0.86fr) minmax(0, 1.4fr);
+}
+
+.teacher-operations-page .ops-export-note {
+  display: grid;
+  gap: var(--ui-space-12);
+  align-content: start;
+  border: 1px solid rgba(145, 169, 207, 0.18);
+  border-radius: var(--ui-radius-panel);
+  background: var(--ui-surface-soft);
+  padding: var(--ui-space-16);
+}
+
+.teacher-operations-page .ops-export-note strong {
+  color: var(--ui-text-strong);
+}
+
+.teacher-operations-page .ops-export-links {
+  display: grid;
+  gap: var(--ui-space-12);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.teacher-operations-page .ops-export-links .btn {
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.teacher-operations-page .ops-export-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-12);
+  flex-wrap: wrap;
+  margin-top: var(--ui-space-16);
+}
+
+.teacher-operations-page .ops-primary-download {
+  min-width: 136px;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .teacher-operations-page .ops-workspace,
+  .teacher-operations-page .ops-toolbar-card,
+  .teacher-operations-page .ops-section-card,
+  .teacher-operations-page .ops-table-card,
+  .teacher-operations-page .ops-export-card,
+  .teacher-operations-page .group-card {
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+@media (max-width: 900px) {
+  .teacher-operations-page .ops-section-grid-two,
+  .teacher-operations-page .ops-export-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-operations-page {
+    max-width: calc(100vw - 16px);
+    gap: var(--ui-space-16);
+  }
+
+  .teacher-operations-page .ops-workspace {
+    gap: var(--ui-space-16);
+    padding: var(--ui-space-16);
+    border-radius: var(--ui-radius-card);
+  }
+
+  .teacher-operations-page .ops-toolbar-card,
+  .teacher-operations-page .card-hd {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .teacher-operations-page .ops-page-header h1 {
+    font-size: 1.45rem;
+  }
+}

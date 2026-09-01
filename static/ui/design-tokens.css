@@ -1,0 +1,149 @@
+/*
+ * SSRL-ESP Soft Glass design tokens.
+ *
+ * New UI code should use --ui-* variables. Legacy aliases remain available so
+ * existing pages can migrate incrementally without changing business markup.
+ */
+:root {
+  color-scheme: light;
+
+  --ui-bg-base: #eef3ff;
+  --ui-bg-soft: #f7f9ff;
+  --ui-bg-cool: #e7eeff;
+  --ui-bg-warm: #fff4df;
+  --ui-page-gradient-base: linear-gradient(115deg, #dceaff 0%, #edf3ff 44%, #f7f9ff 68%, #fff1e4 100%);
+  --ui-page-gradient-veil: linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.30) 220px, rgba(255, 255, 255, 0.72) 620px, rgba(255, 255, 255, 0.88) 100%);
+  --ui-page-glow-cool: radial-gradient(900px 560px at 12% 8%, rgba(115, 157, 242, 0.22) 0%, rgba(115, 157, 242, 0.10) 38%, rgba(115, 157, 242, 0) 72%);
+  --ui-page-glow-warm: radial-gradient(780px 500px at 88% 18%, rgba(255, 221, 180, 0.22) 0%, rgba(255, 221, 180, 0.09) 42%, rgba(255, 221, 180, 0) 74%);
+  --ui-page-glow-cool-auth: radial-gradient(980px 620px at 8% 6%, rgba(115, 157, 242, 0.28) 0%, rgba(115, 157, 242, 0.12) 40%, rgba(115, 157, 242, 0) 74%);
+  --ui-page-glow-warm-auth: radial-gradient(820px 540px at 90% 16%, rgba(255, 221, 180, 0.28) 0%, rgba(255, 221, 180, 0.12) 42%, rgba(255, 221, 180, 0) 74%);
+  --ui-page-glow-cool-analytics: radial-gradient(820px 520px at 10% 4%, rgba(115, 157, 242, 0.14) 0%, rgba(115, 157, 242, 0.06) 40%, rgba(115, 157, 242, 0) 74%);
+  --ui-page-glow-warm-analytics: radial-gradient(760px 500px at 92% 14%, rgba(255, 221, 180, 0.12) 0%, rgba(255, 221, 180, 0.05) 42%, rgba(255, 221, 180, 0) 74%);
+
+  --ui-text-strong: #132b4f;
+  --ui-text-primary: #314764;
+  --ui-text-secondary: #5e6f87;
+  --ui-text-muted: #62738c;
+  --ui-text-on-brand: #ffffff;
+
+  --ui-brand-900: #102d59;
+  --ui-brand-800: #153b70;
+  --ui-brand-700: #1d548d;
+  --ui-brand-600: #246da5;
+  --ui-brand-soft: rgba(70, 118, 190, 0.12);
+
+  --ui-glass-workspace: rgba(255, 255, 255, 0.70);
+  --ui-glass-card: rgba(255, 255, 255, 0.82);
+  --ui-glass-control: rgba(255, 255, 255, 0.64);
+  --ui-surface-solid: #ffffff;
+  --ui-surface-soft: #f8faff;
+
+  --ui-border-glass: rgba(255, 255, 255, 0.58);
+  --ui-border-soft: rgba(145, 169, 207, 0.24);
+  --ui-border-strong: rgba(93, 126, 177, 0.40);
+
+  --ui-radius-workspace: 36px;
+  --ui-radius-card: 28px;
+  --ui-radius-panel: 22px;
+  --ui-radius-control: 18px;
+  --ui-radius-small: 12px;
+  --ui-radius-pill: 999px;
+
+  --ui-shadow-workspace: 0 30px 80px rgba(54, 83, 137, 0.12);
+  --ui-shadow-card: 0 16px 42px rgba(54, 83, 137, 0.08);
+  --ui-shadow-control: 0 7px 22px rgba(54, 83, 137, 0.06);
+  --ui-shadow-hover: 0 20px 50px rgba(54, 83, 137, 0.12);
+
+  --ui-blur-workspace: 28px;
+  --ui-blur-card: 20px;
+  --ui-blur-control: 14px;
+
+  --ui-space-4: 4px;
+  --ui-space-8: 8px;
+  --ui-space-12: 12px;
+  --ui-space-16: 16px;
+  --ui-space-20: 20px;
+  --ui-space-24: 24px;
+  --ui-space-32: 32px;
+  --ui-space-40: 40px;
+  --ui-space-48: 48px;
+  --ui-space-56: 56px;
+
+  --ui-z-base: 0;
+  --ui-z-sticky: 100;
+  --ui-z-dropdown: 300;
+  --ui-z-overlay: 600;
+  --ui-z-modal: 800;
+  --ui-z-toast: 1000;
+
+  --ui-success-surface: #edf7f0;
+  --ui-success-border: rgba(56, 118, 78, 0.28);
+  --ui-success-text: #376f4b;
+  --ui-warning-surface: #fff6e8;
+  --ui-warning-border: rgba(155, 105, 37, 0.28);
+  --ui-warning-text: #8b5f21;
+  --ui-danger-surface: #fff0ef;
+  --ui-danger-border: rgba(160, 72, 72, 0.28);
+  --ui-danger-text: #984848;
+  --ui-overlay: rgba(16, 45, 89, 0.36);
+  --ui-focus-ring: 0 0 0 3px rgba(36, 109, 165, 0.20);
+
+  --ui-font-sans: "Microsoft YaHei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ui-font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+  --ui-motion-fast: 140ms;
+  --ui-motion-base: 180ms;
+  --ui-ease-standard: cubic-bezier(0.2, 0.6, 0.3, 1);
+
+  /* Legacy global variables. */
+  --primary: var(--ui-brand-700);
+  --primary-hover: var(--ui-brand-800);
+  --primary-soft: var(--ui-brand-soft);
+  --primary-border: var(--ui-border-strong);
+  --bg: var(--ui-bg-base);
+  --surface: var(--ui-surface-solid);
+  --surface-alpha: var(--ui-glass-workspace);
+  --surface-soft: var(--ui-glass-control);
+  --surface-card: var(--ui-glass-card);
+  --border: var(--ui-border-soft);
+  --border-light: rgba(145, 169, 207, 0.16);
+  --text: var(--ui-text-primary);
+  --text-secondary: var(--ui-text-secondary);
+  --text-muted: var(--ui-text-muted);
+  --shadow-sm: var(--ui-shadow-control);
+  --shadow: var(--ui-shadow-card);
+  --shadow-md: var(--ui-shadow-hover);
+  --shadow-lg: var(--ui-shadow-workspace);
+  --radius-sm: var(--ui-radius-small);
+  --radius: var(--ui-radius-control);
+  --radius-lg: var(--ui-radius-panel);
+  --radius-xl: var(--ui-radius-card);
+  --radius-full: var(--ui-radius-pill);
+  --danger-soft: var(--ui-danger-surface);
+  --danger-border: var(--ui-danger-border);
+  --danger-text: var(--ui-danger-text);
+  --warning-soft: var(--ui-warning-surface);
+  --warning-border: var(--ui-warning-border);
+  --warning-text: var(--ui-warning-text);
+  --success-soft: var(--ui-success-surface);
+  --success-border: var(--ui-success-border);
+  --success-text: var(--ui-success-text);
+
+  /* Student shell compatibility aliases. */
+  --paper-bg: var(--ui-bg-base);
+  --paper-surface: var(--ui-glass-workspace);
+  --paper-strong: var(--ui-glass-card);
+  --paper-soft: var(--ui-glass-control);
+  --paper-card: rgba(255, 255, 255, 0.74);
+  --ink: var(--ui-text-strong);
+  --ink-2: var(--ui-text-primary);
+  --ink-muted: var(--ui-text-muted);
+  --line: var(--ui-border-soft);
+  --line-soft: rgba(145, 169, 207, 0.16);
+  --accent: var(--ui-brand-700);
+  --accent-dim: var(--ui-brand-soft);
+  --accent-soft: rgba(70, 118, 190, 0.08);
+  --accent-border: var(--ui-border-strong);
+  --shadow-soft: var(--ui-shadow-control);
+  --font-body: var(--ui-font-sans);
+  --font-heading: var(--ui-font-sans);
+}

@@ -1,0 +1,27 @@
+{# SSRL-ESP Teacher Base Layout - Jinja2 template for future migration #}
+{# Currently rendered via page_shell() for backward compatibility #}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}教师端 - SSRL-ESP{% endblock %}</title>
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="topbar">
+      <div class="nav">
+        <div class="nav-title">{% block nav_title %}SSRL-ESP 研究控制台{% endblock %}</div>
+        <div class="nav-user">
+          <span>{{ real_name }}</span>
+          <a class="btn small secondary" href="/teacher">仪表盘</a>
+          <a class="btn small secondary" href="/logout">退出</a>
+        </div>
+      </div>
+    </nav>
+    {% block content %}{% endblock %}
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

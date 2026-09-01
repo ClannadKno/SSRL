@@ -1,0 +1,329 @@
+/*
+ * Shared Soft Glass primitives.
+ * All component selectors are namespaced so the TipTap editor and legacy
+ * business controls are not globally restyled.
+ */
+body.ui-page-background {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  color: var(--ui-text-primary);
+  background-color: var(--ui-bg-base);
+  background:
+    var(--ui-page-glow-cool),
+    var(--ui-page-glow-warm),
+    var(--ui-page-gradient-veil),
+    var(--ui-page-gradient-base);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position: center top, center top, center top, center top;
+  background-size: cover, cover, cover, cover;
+}
+
+body.ui-page-background::before,
+body.ui-page-background::after {
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  filter: blur(18px);
+}
+
+body.ui-page-background::before {
+  top: -15rem;
+  left: -12rem;
+  width: 38rem;
+  height: 38rem;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 70%);
+}
+
+body.ui-page-background::after {
+  right: -13rem;
+  bottom: -18rem;
+  width: 42rem;
+  height: 42rem;
+  background: radial-gradient(circle, rgba(255, 244, 223, 0.78), rgba(255, 244, 223, 0) 70%);
+}
+
+body.ui-bg-auth {
+  background:
+    var(--ui-page-glow-cool-auth),
+    var(--ui-page-glow-warm-auth),
+    var(--ui-page-gradient-veil),
+    var(--ui-page-gradient-base);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position: center top, center top, center top, center top;
+  background-size: cover, cover, cover, cover;
+}
+
+body.ui-bg-workspace,
+.ui-bg-workspace {
+  background:
+    var(--ui-page-glow-cool),
+    var(--ui-page-glow-warm),
+    var(--ui-page-gradient-veil),
+    var(--ui-page-gradient-base);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position: center top, center top, center top, center top;
+  background-size: cover, cover, cover, cover;
+}
+
+body.ui-bg-analytics,
+.ui-bg-analytics {
+  background:
+    var(--ui-page-glow-cool-analytics),
+    var(--ui-page-glow-warm-analytics),
+    var(--ui-page-gradient-veil),
+    var(--ui-page-gradient-base);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position: center top, center top, center top, center top;
+  background-size: cover, cover, cover, cover;
+}
+
+.ui-page-background {
+  min-height: 100vh;
+}
+
+.ui-workspace {
+  position: relative;
+  z-index: var(--ui-z-base);
+  border: 1px solid var(--ui-border-glass);
+  border-radius: var(--ui-radius-workspace);
+  background: var(--ui-glass-workspace);
+  box-shadow: var(--ui-shadow-workspace);
+  -webkit-backdrop-filter: blur(var(--ui-blur-workspace));
+  backdrop-filter: blur(var(--ui-blur-workspace));
+}
+
+.ui-glass-card,
+.ui-panel,
+.ui-toolbar {
+  border: 1px solid var(--ui-border-soft);
+  background: var(--ui-glass-card);
+  box-shadow: var(--ui-shadow-card);
+  -webkit-backdrop-filter: blur(var(--ui-blur-card));
+  backdrop-filter: blur(var(--ui-blur-card));
+}
+
+.ui-glass-card {
+  border-radius: var(--ui-radius-card);
+}
+
+.ui-solid-card {
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-card);
+  background: var(--ui-surface-solid);
+  box-shadow: var(--ui-shadow-card);
+}
+
+.ui-panel,
+.ui-toolbar {
+  border-radius: var(--ui-radius-panel);
+}
+
+.ui-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-12);
+  padding: var(--ui-space-12) var(--ui-space-16);
+}
+
+.ui-field {
+  display: grid;
+  gap: var(--ui-space-8);
+}
+
+.ui-field > label,
+.ui-field-label {
+  color: var(--ui-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.ui-input,
+.ui-select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+  outline: 0;
+  background: var(--ui-glass-control);
+  color: var(--ui-text-primary);
+  font: inherit;
+  padding: 0 var(--ui-space-16);
+  box-shadow: var(--ui-shadow-control);
+}
+
+.ui-input::placeholder {
+  color: var(--ui-text-muted);
+  opacity: 1;
+}
+
+.ui-input:focus-visible,
+.ui-select:focus-visible {
+  border-color: var(--ui-brand-600);
+  box-shadow: var(--ui-focus-ring), var(--ui-shadow-control);
+}
+
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  gap: var(--ui-space-8);
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-control);
+  padding: 0 var(--ui-space-20);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--ui-shadow-control);
+}
+
+.ui-button-primary {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, var(--ui-brand-900), var(--ui-brand-600));
+  color: var(--ui-text-on-brand);
+}
+
+.ui-button-secondary {
+  border-color: var(--ui-border-strong);
+  background: var(--ui-glass-control);
+  color: var(--ui-text-primary);
+}
+
+.ui-button-danger {
+  border-color: var(--ui-danger-border);
+  background: var(--ui-danger-surface);
+  color: var(--ui-danger-text);
+}
+
+.ui-button:focus-visible {
+  outline: 0;
+  box-shadow: var(--ui-focus-ring), var(--ui-shadow-control);
+}
+
+.ui-button:disabled,
+.ui-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  filter: saturate(0.5);
+  opacity: 0.58;
+  transform: none;
+}
+
+.ui-badge,
+.ui-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-4);
+  min-height: 26px;
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-brand-soft);
+  color: var(--ui-brand-800);
+  padding: 2px var(--ui-space-12);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ui-status-badge[data-status="success"] {
+  border-color: var(--ui-success-border);
+  background: var(--ui-success-surface);
+  color: var(--ui-success-text);
+}
+
+.ui-status-badge[data-status="warning"] {
+  border-color: var(--ui-warning-border);
+  background: var(--ui-warning-surface);
+  color: var(--ui-warning-text);
+}
+
+.ui-status-badge[data-status="danger"],
+.ui-status-badge[data-status="error"] {
+  border-color: var(--ui-danger-border);
+  background: var(--ui-danger-surface);
+  color: var(--ui-danger-text);
+}
+
+.ui-modal {
+  position: relative;
+  z-index: var(--ui-z-modal);
+  width: min(620px, calc(100vw - 32px));
+  max-height: min(88vh, 860px);
+  overflow: auto;
+  border: 1px solid var(--ui-border-glass);
+  border-radius: var(--ui-radius-card);
+  background: var(--ui-glass-card);
+  box-shadow: var(--ui-shadow-workspace);
+  -webkit-backdrop-filter: blur(var(--ui-blur-workspace));
+  backdrop-filter: blur(var(--ui-blur-workspace));
+}
+
+.ui-empty-state,
+.ui-error-state,
+.ui-loading-state {
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+  border: 1px dashed var(--ui-border-strong);
+  border-radius: var(--ui-radius-panel);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+  padding: var(--ui-space-24);
+  text-align: center;
+}
+
+.ui-error-state {
+  border-color: var(--ui-danger-border);
+  background: var(--ui-danger-surface);
+  color: var(--ui-danger-text);
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .ui-workspace,
+  .ui-glass-card,
+  .ui-panel,
+  .ui-toolbar,
+  .ui-modal {
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  .topbar,
+  .gs-bar,
+  .card,
+  .panel,
+  .group-card,
+  .hero-card,
+  .export-card,
+  .dock-card,
+  .task-hero,
+  .dialogue-panel,
+  .teacher-hero,
+  .analysis-card,
+  .login-card {
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+@media (max-width: 768px) {
+  body.ui-page-background::before {
+    width: 28rem;
+    height: 28rem;
+  }
+
+  body.ui-page-background::after {
+    width: 30rem;
+    height: 30rem;
+  }
+
+  .ui-workspace {
+    border-radius: var(--ui-radius-card);
+  }
+
+  .ui-glass-card,
+  .ui-solid-card {
+    border-radius: var(--ui-radius-panel);
+  }
+}

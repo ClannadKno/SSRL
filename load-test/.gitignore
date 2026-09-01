@@ -1,0 +1,5 @@
+node_modules/
+data/students.json
+data/students.local.json
+reports/*
+!reports/.gitkeep
